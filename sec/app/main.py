@@ -1,11 +1,18 @@
 import os
 import logging
-from app import app
+from flask import Flask
 
-# Set up logging for easier debugging
+# Initialize Flask app
+app = Flask(__name__)
+
+# Optional: Set up logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Remove direct blueprint registrations from main.py since they are already in app.py
+# Define routes
+@app.route('/')
+def home():
+    return "Due Process AI is running!"
 
+# Run the app for local development (Render uses gunicorn for production)
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
