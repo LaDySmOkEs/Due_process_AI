@@ -1,6 +1,6 @@
 import os
 import logging
-from app import app
+from .app import app
 
 # Set up logging for easier debugging
 logging.basicConfig(level=logging.DEBUG)
