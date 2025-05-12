@@ -1,0 +1,1023 @@
+/* Due Process AI - Premium Legal Assistant Stylesheet */
+
+/* Custom Variables */
+:root {
+    --dp-dark: #1a1a1a;
+    --dp-gold: #c9a227;
+    --dp-gold-light: #e7d194;
+    --dp-gold-dark: #9e7f1e;
+    --dp-text: #2b2b2b;
+    --dp-light: #f8f9fa;
+    --dp-border: #dee2e6;
+    --dp-red: #b22222;
+    --dp-green: #2e8b57;
+    --dp-blue: #0047ab;
+    --dp-navy: #162955;
+    
+    /* Attorney-style color scheme */
+    --attorney-navy: #0c233f; 
+    --attorney-gold: #c9a227;
+    --attorney-cream: #f6f2e9;
+    --attorney-gray: #5a6278;
+    --attorney-highlight: #e0bc5e;
+}
+
+/* General Styles */
+body {
+    font-family: 'Georgia', 'Roboto', 'Helvetica Neue', Arial, serif;
+    color: var(--dp-text);
+    background-color: var(--attorney-cream);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.6;
+    letter-spacing: 0.01rem;
+}
+
+.container {
+    flex: 1;
+}
+
+/* Navigation - Attorney Style */
+.navbar-brand {
+    font-family: 'Georgia', serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--attorney-gold) !important;
+    letter-spacing: 0.05rem;
+    display: flex;
+    align-items: center;
+}
+
+.attorney-tagline {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: rgba(201, 162, 39, 0.8);
+    font-size: 0.75rem;
+    letter-spacing: 0.03rem;
+    border-left: 1px solid rgba(201, 162, 39, 0.4);
+    padding-left: 0.75rem;
+}
+
+.navbar-dark {
+    background-color: var(--attorney-navy) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid var(--attorney-gold);
+}
+
+.nav-link {
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05rem;
+    padding: 0.75rem 1rem !important;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--attorney-gold) !important;
+}
+
+/* Buttons - Attorney Style */
+.btn {
+    font-family: 'Georgia', serif;
+    font-weight: 600;
+    letter-spacing: 0.05rem;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+    border-radius: 0.25rem;
+}
+
+.btn-primary {
+    background-color: var(--attorney-navy);
+    border-color: var(--attorney-navy);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--attorney-navy);
+    border-color: var(--attorney-gold);
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background-color: var(--attorney-gold);
+    border-color: var(--attorney-gold);
+    color: var(--attorney-navy);
+    font-weight: bold;
+}
+
+.btn-success:hover, .btn-success:focus {
+    background-color: var(--attorney-highlight);
+    border-color: var(--attorney-highlight);
+    color: var(--attorney-navy);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-outline-secondary {
+    color: var(--attorney-navy);
+    border-color: var(--attorney-gray);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--attorney-navy);
+    border-color: var(--attorney-navy);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Cards - Attorney Style */
+.card {
+    border-radius: 0.25rem;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.08);
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    font-family: 'Georgia', serif;
+    font-weight: 600;
+    letter-spacing: 0.02rem;
+    border-bottom: 2px solid var(--attorney-gold);
+    padding: 1rem 1.25rem;
+}
+
+.card .bg-dark {
+    background-color: var(--attorney-navy) !important;
+}
+
+.card .card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-family: 'Georgia', serif;
+    color: var(--attorney-navy);
+    margin-bottom: 1rem;
+}
+
+/* Custom Card Styles */
+.card.border-primary {
+    border-top: 3px solid var(--dp-blue) !important;
+}
+
+.card.border-success {
+    border-top: 3px solid var(--dp-green) !important;
+}
+
+.card.border-danger {
+    border-top: 3px solid var(--dp-red) !important;
+}
+
+.card.border-warning {
+    border-top: 3px solid var(--attorney-gold) !important;
+}
+
+/* Shadows and Elevations */
+.shadow {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Form Controls - Attorney Style */
+.form-control, .form-select {
+    border: 1px solid #d9d9d9;
+    border-radius: 0.25rem;
+    padding: 0.625rem 0.75rem;
+    font-family: 'Georgia', serif;
+    transition: all 0.3s ease;
+    background-color: #fcfcfc;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--attorney-gold);
+    box-shadow: 0 0 0 0.25rem rgba(201, 162, 39, 0.15);
+    background-color: #ffffff;
+}
+
+.form-label {
+    font-family: 'Georgia', serif;
+    font-weight: 600;
+    color: var(--attorney-navy);
+    margin-bottom: 0.5rem;
+}
+
+.form-text {
+    color: var(--attorney-gray);
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+/* Custom form groups */
+.custom-form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.custom-form-group .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.required-field::after {
+    content: "*";
+    color: var(--dp-red);
+    margin-left: 0.25rem;
+}
+
+/* Hero Section */
+.hero-section {
+    padding: 3rem 0;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 2rem;
+}
+
+/* Icon Square */
+.icon-square {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--dp-gold-light);
+    color: var(--dp-dark);
+}
+
+/* Footer - Attorney Style */
+.footer {
+    padding: 2rem 0;
+    width: 100%;
+    background-color: var(--attorney-navy);
+    color: #fff;
+    border-top: 2px solid var(--attorney-gold);
+}
+
+.footer h5 {
+    font-family: 'Georgia', serif;
+    font-weight: 600;
+    color: var(--attorney-gold);
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.05rem;
+}
+
+.footer-links {
+    list-style: none;
+    padding-left: 0;
+}
+
+.footer-links li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+    color: #d9d9d9;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: var(--attorney-gold);
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    color: #a9a9a9;
+}
+
+/* Badge styling */
+.badge.bg-warning {
+    background-color: var(--dp-gold) !important;
+}
+
+/* Custom modal styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-dialog {
+    position: relative;
+    margin: 10% auto;
+    max-width: 500px;
+}
+
+/* Case Dashboard Styles */
+.case-card {
+    transition: transform 0.2s ease;
+}
+
+.case-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Clickable Case Rows */
+.case-row {
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.case-row:hover {
+    background-color: rgba(201, 162, 39, 0.05) !important;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    z-index: 1;
+}
+
+.case-row:hover td {
+    border-color: var(--attorney-gold);
+}
+
+.case-row:active {
+    background-color: rgba(201, 162, 39, 0.1) !important;
+    transform: translateY(1px);
+}
+
+/* Legal document styling - Attorney Grade */
+.legal-document {
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 1.8;
+    padding: 2.5rem;
+    background-color: #fff;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.08);
+    border: 1px solid #eaeaea;
+    border-radius: 0.25rem;
+    color: #2c2c2c;
+    position: relative;
+}
+
+.legal-document:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background-color: var(--attorney-navy);
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+.legal-document h1 {
+    font-weight: bold;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--attorney-navy);
+    text-align: center;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 1rem;
+}
+
+.legal-document h2 {
+    font-weight: bold;
+    font-size: 1.4rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: var(--attorney-navy);
+}
+
+.legal-document h3 {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--attorney-navy);
+}
+
+.legal-document p {
+    margin-bottom: 1.25rem;
+    text-align: justify;
+}
+
+.legal-document ul, .legal-document ol {
+    margin-bottom: 1.25rem;
+    padding-left: 2rem;
+}
+
+.legal-document li {
+    margin-bottom: 0.5rem;
+}
+
+.legal-document .signature-line {
+    margin-top: 3rem;
+    border-top: 1px solid #eaeaea;
+    padding-top: 1.5rem;
+    font-style: italic;
+}
+
+.legal-document .document-footer {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+    border-top: 1px solid #eaeaea;
+    padding-top: 1rem;
+}
+
+/* Case Details - Attorney Style */
+.case-detail-header {
+    background-color: var(--attorney-cream);
+    border-left: 4px solid var(--attorney-gold);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    font-family: 'Georgia', serif;
+}
+
+.case-detail-header h4 {
+    font-weight: 600;
+    color: var(--attorney-navy);
+    margin-bottom: 0.5rem;
+}
+
+.case-detail-header .meta-info {
+    color: var(--attorney-gray);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.case-section {
+    position: relative;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    background-color: #fff;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.08);
+}
+
+.case-section-title {
+    font-family: 'Georgia', serif;
+    color: var(--attorney-navy);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #eaeaea;
+    font-weight: 600;
+}
+
+.evidence-collection {
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.evidence-item-card {
+    transition: all 0.2s ease;
+    background-color: white;
+}
+
+.evidence-item-card:hover {
+    background-color: rgba(248, 249, 250, 0.7);
+    box-shadow: inset 0 0 0 1px var(--attorney-gold);
+}
+
+.evidence-badge {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: rgba(240, 240, 240, 0.9);
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e5e5;
+}
+
+.evidence-number {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--attorney-gold);
+    color: var(--attorney-navy);
+    font-weight: bold;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.evidence-title {
+    font-family: 'Georgia', serif;
+    font-weight: 600;
+    color: var(--attorney-navy);
+    line-height: 1.3;
+}
+
+.evidence-description {
+    font-size: 0.9rem;
+    color: #333;
+    line-height: 1.5;
+}
+
+.evidence-meta {
+    font-size: 0.8rem;
+    color: var(--attorney-gray);
+}
+
+.evidence-content {
+    position: relative;
+}
+
+.btn-attorney-navy {
+    background-color: var(--attorney-navy);
+    border-color: var(--attorney-navy);
+    color: #fff;
+}
+
+.btn-attorney-navy:hover {
+    background-color: #1e355e;
+    border-color: #1e355e;
+    color: #fff;
+}
+
+.btn-outline-attorney-navy {
+    color: var(--attorney-navy);
+    border-color: var(--attorney-navy);
+}
+
+.btn-outline-attorney-navy:hover {
+    background-color: var(--attorney-navy);
+    color: #fff;
+}
+
+/* Original evidence styles maintained for compatibility */
+.evidence-item {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    border-left: 3px solid var(--attorney-gold);
+}
+
+.evidence-item:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+}
+
+.evidence-item .evidence-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--attorney-navy);
+}
+
+.evidence-item .evidence-meta {
+    font-size: 0.85rem;
+    color: var(--attorney-gray);
+    margin-bottom: 0.5rem;
+}
+
+/* Styling for the evidence analysis section */
+.evidence-analysis-card {
+    transition: all 0.2s ease;
+}
+
+.evidence-analysis-card:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.evidence-analysis-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.relevance-indicator .badge {
+    font-weight: 500;
+    letter-spacing: 0.03rem;
+}
+
+.key-points-list li {
+    padding: 0.25rem 0;
+}
+
+.investigative-findings {
+    height: 100%;
+}
+
+/* Styling for the exhibit organization section */
+.exhibit-group-card {
+    transition: all 0.2s ease;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.exhibit-group-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.exhibit-header {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
+/* Attorney-specific buttons */
+.btn-attorney {
+    background-color: var(--attorney-navy);
+    color: white;
+    border: 1px solid var(--attorney-navy);
+}
+
+.btn-attorney:hover {
+    background-color: #1a385e;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-outline-attorney {
+    color: var(--attorney-navy);
+    border-color: var(--attorney-navy);
+}
+
+.btn-outline-attorney:hover {
+    background-color: var(--attorney-navy);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Alert attorney styles */
+.alert-attorney-light {
+    background-color: #f0f4f9;
+    border-left: 4px solid var(--attorney-navy);
+    color: var(--dp-text);
+}
+
+/* Attorney-specific border */
+.border-attorney {
+    border-color: var(--attorney-gold) !important;
+    border-width: 2px !important;
+}
+
+/* Styling for attorney color buttons */
+.btn-attorney-gold {
+    background-color: var(--attorney-gold);
+    border-color: var(--attorney-gold);
+    color: var(--attorney-navy);
+    font-weight: 500;
+}
+
+.btn-attorney-gold:hover {
+    background-color: #e0c235;
+    border-color: #e0c235;
+    color: var(--attorney-navy);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.case-timeline {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.case-timeline li {
+    position: relative;
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+}
+
+.case-timeline li:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: var(--attorney-gold);
+}
+
+/* Dashboard stats - Attorney Style */
+.stat-card {
+    border-radius: 0.25rem;
+    background-color: #fff;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
+    padding: 1.75rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid var(--attorney-gold);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+}
+
+.stat-card:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: var(--attorney-navy);
+}
+
+.stat-card .stat-icon {
+    font-size: 2.25rem;
+    margin-bottom: 1rem;
+    color: var(--attorney-gold);
+    background: rgba(201, 162, 39, 0.1);
+    width: 4.5rem;
+    height: 4.5rem;
+    line-height: 4.5rem;
+    border-radius: 50%;
+    margin: 0 auto 1.25rem;
+}
+
+.stat-card .stat-value {
+    font-family: 'Georgia', serif;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--attorney-navy);
+}
+
+.stat-card .stat-label {
+    color: var(--attorney-gray);
+    font-size: 0.9rem;
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.05rem;
+    text-transform: uppercase;
+}
+
+/* Different color themes for stat cards */
+.stat-card.theme-primary:before {
+    background-color: var(--dp-blue);
+}
+.stat-card.theme-success:before {
+    background-color: var(--dp-green);
+}
+.stat-card.theme-warning:before {
+    background-color: var(--attorney-gold);
+}
+.stat-card.theme-danger:before {
+    background-color: var(--dp-red);
+}
+
+/* AI Analysis - Attorney Grade */
+.ai-analysis-section {
+    background-color: #fff;
+    padding: 1.75rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    border-left: 3px solid var(--attorney-navy);
+}
+
+.ai-analysis-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.ai-analysis-header .ai-icon {
+    margin-right: 1rem;
+    color: var(--attorney-navy);
+    background-color: rgba(12, 35, 63, 0.1);
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.5rem;
+}
+
+.ai-analysis-header h4 {
+    font-family: 'Georgia', serif;
+    color: var(--attorney-navy);
+    margin: 0;
+    font-weight: 600;
+}
+
+.ai-analysis-content {
+    color: #333;
+    line-height: 1.7;
+}
+
+.ai-analysis-content h5 {
+    color: var(--attorney-navy);
+    font-family: 'Georgia', serif;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.ai-analysis-content ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ai-analysis-content ul li {
+    margin-bottom: 0.75rem;
+}
+
+.ai-analysis-quote {
+    padding: 1.25rem;
+    background-color: #f8f9fa;
+    border-left: 3px solid var(--attorney-gold);
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #555;
+}
+
+.ai-citation {
+    font-size: 0.9rem;
+    color: var(--attorney-gray);
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+.ai-strategy-box {
+    background-color: rgba(12, 35, 63, 0.05);
+    border: 1px solid rgba(12, 35, 63, 0.1);
+    border-radius: 0.25rem;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+}
+
+.ai-strategy-box h5 {
+    color: var(--attorney-navy);
+    margin-top: 0;
+    font-weight: 600;
+}
+
+.ai-confidence-indicator {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+}
+
+.ai-confidence-label {
+    margin-right: 1rem;
+    font-weight: 600;
+    color: var(--attorney-navy);
+    font-size: 0.9rem;
+}
+
+.ai-confidence-bar {
+    flex-grow: 1;
+    height: 0.5rem;
+    background-color: #e9ecef;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.ai-confidence-value {
+    height: 100%;
+    background-color: var(--attorney-gold);
+}
+
+.ai-error-message {
+    background-color: #fff5f5;
+    border: 1px solid #ffe5e5;
+    border-left: 3px solid var(--dp-red);
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 0.25rem;
+    color: #d44;
+}
+
+.ai-error-message h5 {
+    color: #d44;
+    margin-top: 0;
+}
+
+/* Tables - Attorney Style */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.table th {
+    font-family: 'Georgia', serif;
+    font-weight: 600;
+    color: var(--attorney-navy);
+    background-color: rgba(12, 35, 63, 0.03);
+    border-bottom: 2px solid var(--attorney-gold);
+    padding: 0.75rem 1rem;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05rem;
+}
+
+.table td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    border-top: 1px solid #e9e9e9;
+    transition: all 0.2s ease;
+}
+
+.table thead th {
+    vertical-align: bottom;
+}
+
+.table tbody tr:nth-of-type(even) {
+    background-color: rgba(246, 242, 233, 0.4);
+}
+
+.table-responsive {
+    border-radius: 0.25rem;
+    overflow: hidden;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Typography Styles - Attorney Grade */
+.heading-underline {
+    position: relative;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.heading-underline:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 4rem;
+    height: 3px;
+    background-color: var(--attorney-gold);
+}
+
+.text-attorney-navy {
+    color: var(--attorney-navy) !important;
+}
+
+.text-attorney-gold {
+    color: var(--attorney-gold) !important;
+}
+
+.bg-attorney-navy {
+    background-color: var(--attorney-navy) !important;
+}
+
+.bg-attorney-gold {
+    background-color: var(--attorney-gold) !important;
+}
+
+.text-highlight {
+    background-color: rgba(201, 162, 39, 0.15);
+    padding: 0.1rem 0.25rem;
+    border-radius: 0.15rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 0;
+    }
+    
+    h1.display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .icon-square {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+    
+    .ai-analysis-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .ai-analysis-header .ai-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-card {
+        padding: 1.25rem;
+    }
+}

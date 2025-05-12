@@ -1,0 +1,249 @@
+/* 
+ * Due Process AI - Case Timeline Visualization 
+ * CSS Styles for the interactive timeline component
+ */
+
+.dp-timeline-container {
+    position: relative;
+    width: 100%;
+    margin: 30px 0;
+    padding: 20px 0;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Timeline Legend */
+.timeline-legend {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+    padding: 0 15px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+    font-size: 0.85rem;
+}
+
+.legend-marker {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.marker-regular {
+    background-color: #3498db;
+}
+
+.marker-critical {
+    background-color: #e74c3c;
+}
+
+.marker-violation {
+    background-color: #f39c12;
+    position: relative;
+}
+
+.marker-violation:after {
+    content: '!';
+    position: absolute;
+    color: #fff;
+    font-size: 8px;
+    font-weight: bold;
+    top: 1px;
+    left: 4px;
+}
+
+/* Timeline Scale */
+.timeline-scale {
+    position: relative;
+    height: 30px;
+    margin: 0 30px;
+    border-bottom: 2px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+}
+
+.scale-marker {
+    position: relative;
+    height: 10px;
+    border-left: 1px solid #ccc;
+}
+
+.scale-label {
+    position: absolute;
+    bottom: -25px;
+    left: -15px;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* Timeline Events */
+.timeline-events {
+    position: relative;
+    height: 150px;
+    margin: 20px 30px 0;
+}
+
+.event-marker {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #3498db;
+    transform: translate(-50%, 0);
+    top: 0;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+.event-marker:hover, .event-marker.active {
+    transform: translate(-50%, -5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Event type styling */
+.regular-event {
+    background-color: #3498db;
+}
+
+.critical-event {
+    background-color: #e74c3c;
+}
+
+.violation-event {
+    background-color: #f39c12;
+}
+
+.arrest-event {
+    background-color: #9b59b6;
+}
+
+.trial-event {
+    background-color: #2ecc71;
+}
+
+.deadline-event {
+    background-color: #e74c3c;
+}
+
+/* Event details popup */
+.event-details {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 20;
+}
+
+.event-details:after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background-color: #fff;
+    transform: rotate(45deg);
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.05);
+}
+
+.event-marker:hover .event-details, .event-marker.active .event-details {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.event-details h6 {
+    margin: 0 0 5px;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.event-date {
+    color: #666;
+    font-size: 0.75rem;
+    margin-bottom: 5px;
+}
+
+.event-details p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #333;
+}
+
+/* Violation warning */
+.violation-warning {
+    margin-top: 8px;
+    padding: 5px;
+    background-color: #fff3cd;
+    border-left: 3px solid #f39c12;
+    font-size: 0.75rem;
+}
+
+.violation-warning i {
+    color: #f39c12;
+    margin-right: 5px;
+}
+
+/* Timeline placeholder */
+.timeline-placeholder {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    font-style: italic;
+}
+
+/* Speedy Trial Analysis Modal */
+#speedyTrialAnalysisContent {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+#speedyTrialAnalysisContent h5 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+#speedyTrialAnalysisContent .alert-danger {
+    border-left: 4px solid #e74c3c;
+}
+
+#speedyTrialAnalysisContent .alert-warning {
+    border-left: 4px solid #f39c12;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .timeline-legend {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .legend-item {
+        margin: 3px 0;
+    }
+    
+    .timeline-events {
+        height: 200px;
+    }
+    
+    .event-details {
+        width: 180px;
+    }
+}
