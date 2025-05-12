@@ -1,0 +1,601 @@
+{% extends "base.html" %}
+
+{% block title %}Evidence Analysis - {{ case.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.case_summary', case_id=case.id) }}">{{ case.title }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Evidence Analysis</li>
+                </ol>
+            </nav>
+            <h1 class="mb-4">Evidence Analysis & Exhibit Organization</h1>
+            <div class="alert alert-info">
+                <strong>Case:</strong> {{ case.title }} <br>
+                <strong>Type:</strong> {{ case.issue_type }} in {{ case.court_type }} court
+            </div>
+        </div>
+    </div>
+
+    <!-- Introduction to Evidence Analysis Tools -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card bg-attorney-navy text-white">
+                <div class="card-header border-bottom border-attorney-gold">
+                    <h4 class="mb-0"><i class="fas fa-search me-2"></i> Professional Evidence Analysis</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-4">
+                            <i class="fas fa-balance-scale fa-3x text-attorney-gold"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-2">Private Investigator-Grade Evidence Analysis</h5>
+                            <p>Our sophisticated AI-powered analysis examines your evidence with the meticulous attention to detail of a seasoned private investigator, uncovering critical connections and strategic advantages for your case.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="icon-square bg-attorney-gold text-attorney-navy me-3">
+                                    <i class="fas fa-fingerprint"></i>
+                                </div>
+                                <h6 class="mb-0">Forensic Detail Analysis</h6>
+                            </div>
+                            <p class="text-light-50 small">Examines evidence with professional-grade scrutiny to reveal hidden relevance.</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="icon-square bg-attorney-gold text-attorney-navy me-3">
+                                    <i class="fas fa-sitemap"></i>
+                                </div>
+                                <h6 class="mb-0">Strategic Organization</h6>
+                            </div>
+                            <p class="text-light-50 small">Structures evidence into compelling exhibit groups for maximum persuasive impact.</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="icon-square bg-attorney-gold text-attorney-navy me-3">
+                                    <i class="fas fa-gavel"></i>
+                                </div>
+                                <h6 class="mb-0">Court-Ready Preparation</h6>
+                            </div>
+                            <p class="text-light-50 small">Creates litigation-ready documentation with professional presentation guidance.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-3 border-top border-attorney-gold">
+                        <h6><i class="fas fa-robot me-2 text-attorney-gold"></i>Advanced AI Analysis Providers:</h6>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <div class="badge bg-success p-2">
+                                <i class="fas fa-check-circle me-1"></i> OpenAI Advanced Analytics (Primary)
+                            </div>
+                            
+                            {% if anthropic_configured %}
+                            <div class="badge bg-success p-2">
+                                <i class="fas fa-check-circle me-1"></i> Anthropic Claude Intelligence (Premium)
+                            </div>
+                            {% else %}
+                            <a href="{{ url_for('settings.settings') }}" class="badge bg-secondary p-2 text-decoration-none">
+                                <i class="fas fa-plus-circle me-1"></i> Add Anthropic Claude Intelligence (Premium)
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Evidence Items Section -->
+        <div class="col-lg-5 mb-4">
+            <div class="card h-100 border-attorney-navy">
+                <div class="card-header bg-attorney-navy text-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0"><i class="fas fa-search-plus me-2"></i> Investigative Evidence</h5>
+                        <small class="text-attorney-gold">Case File: #{{ case.id }}</small>
+                    </div>
+                    <span class="badge bg-attorney-gold text-attorney-navy">{{ evidence_items|length }} Items</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if evidence_items %}
+                        <div class="evidence-collection">
+                            {% for item in evidence_items %}
+                            <div class="evidence-item-card p-3 border-bottom">
+                                <div class="d-flex align-items-start">
+                                    <div class="evidence-icon me-3">
+                                        {% if item.evidence_type == 'file' %}
+                                            <div class="evidence-badge">
+                                                <i class="fas fa-file-alt fa-2x text-attorney-navy"></i>
+                                                <span class="evidence-number">{{ loop.index }}</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="evidence-badge">
+                                                <i class="fas fa-link fa-2x text-attorney-navy"></i>
+                                                <span class="evidence-number">{{ loop.index }}</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="evidence-content flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-top">
+                                            <h6 class="evidence-title mb-1">
+                                                {% if item.evidence_type == 'file' %}
+                                                    {{ item.original_filename or "Document Evidence" }}
+                                                {% else %}
+                                                    {{ item.platform or "Digital Evidence" }}
+                                                {% endif %}
+                                            </h6>
+                                            <div>
+                                                {% if item.evidence_type == 'file' %}
+                                                    <span class="badge bg-attorney-navy"><i class="fas fa-file-contract me-1"></i> Document</span>
+                                                {% else %}
+                                                    <span class="badge bg-info"><i class="fas fa-globe me-1"></i> Digital</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <p class="evidence-description mb-2">{{ item.description }}</p>
+                                        <div class="evidence-meta d-flex align-items-center">
+                                            <span class="me-3 small text-muted"><i class="fas fa-calendar-alt me-1"></i> Collected: {{ item.uploaded_at.strftime('%Y-%m-%d') }}</span>
+                                            {% if item.platform %}
+                                                <span class="small text-muted"><i class="fas fa-server me-1"></i> Source: {{ item.platform }}</span>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="evidence-actions mt-2">
+                                            <a href="{{ url_for('cases.view_transcript', evidence_id=item.id) }}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-search me-1"></i> Examine
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-attorney-navy ms-1">
+                                                <i class="fas fa-tag me-1"></i> Tag
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="p-3 bg-light border-top">
+                            <a href="{{ url_for('cases.upload_evidence', case_id=case.id) }}" class="btn btn-attorney-navy">
+                                <i class="fas fa-plus me-1"></i> Add New Evidence
+                            </a>
+                            <button class="btn btn-outline-attorney-navy ms-2">
+                                <i class="fas fa-print me-1"></i> Print Log
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning m-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle fa-2x me-3 text-warning"></i>
+                                <div>
+                                    <h6 class="mb-1">No Evidence Collected</h6>
+                                    <p class="mb-3">Your investigation has not documented any evidence for this case. Begin collecting evidence to build your case file.</p>
+                                    <a href="{{ url_for('cases.upload_evidence', case_id=case.id) }}" class="btn btn-attorney-navy">
+                                        <i class="fas fa-plus me-1"></i> Begin Evidence Collection
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Evidence Relevance Analysis Section -->
+        <div class="col-lg-7 mb-4">
+            <div class="card h-100 border-attorney-navy">
+                <div class="card-header bg-attorney-navy text-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0"><i class="fas fa-balance-scale me-2"></i> Forensic Evidence Analysis</h5>
+                        <small class="text-attorney-gold">Professional Assessment & Strategic Insights</small>
+                    </div>
+                    {% if evidence_items and not has_relevance_analysis %}
+                    <form method="post" action="{{ url_for('evidence_ai.evidence_analysis', case_id=case.id) }}">
+                        <input type="hidden" name="analysis_type" value="evidence_relevance">
+                        <button type="submit" class="btn btn-attorney-gold btn-sm">
+                            <i class="fas fa-microscope me-1"></i> Analyze Evidence
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="card-body p-0">
+                    {% if relevance_analysis and relevance_analysis.get('evidence_analysis') %}
+                        <div class="p-3 border-bottom bg-light">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clipboard-check text-attorney-navy fa-2x me-3"></i>
+                                <div>
+                                    <h6 class="mb-1 text-attorney-navy">Forensic Evidence Assessment Complete</h6>
+                                    <p class="mb-0 small">Professional analysis of {{ evidence_items|length }} evidence items with strategic relevance scoring</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3">
+                            {% for evidence in relevance_analysis.get('evidence_analysis', []) %}
+                            <div class="evidence-analysis-card mb-4 border 
+                                {% if evidence.relevance_score == 'High' %}border-success{% 
+                                elif evidence.relevance_score == 'Medium' %}border-warning{% 
+                                else %}border-secondary{% endif %} rounded overflow-hidden">
+                                
+                                <div class="evidence-analysis-header d-flex justify-content-between align-items-center p-2 px-3
+                                    {% if evidence.relevance_score == 'High' %}bg-success bg-opacity-10{% 
+                                    elif evidence.relevance_score == 'Medium' %}bg-warning bg-opacity-10{% 
+                                    else %}bg-secondary bg-opacity-10{% endif %}">
+                                    
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3 evidence-badge small">
+                                            <i class="fas fa-file-alt fa-lg text-attorney-navy"></i>
+                                            <span class="evidence-number">{{ loop.index }}</span>
+                                        </div>
+                                        <h6 class="mb-0 text-attorney-navy">Evidence Analysis Report</h6>
+                                    </div>
+                                    
+                                    <div class="relevance-indicator d-flex align-items-center">
+                                        <span class="me-2 small">Relevance:</span>
+                                        <span class="badge 
+                                            {% if evidence.relevance_score == 'High' %}bg-success{% 
+                                            elif evidence.relevance_score == 'Medium' %}bg-warning text-dark{% 
+                                            else %}bg-secondary{% endif %} px-3 py-2">
+                                            {{ evidence.relevance_score }}
+                                            {% if evidence.relevance_score == 'High' %}<i class="fas fa-star ms-1"></i>{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-3">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="investigative-findings">
+                                                <h6 class="text-attorney-navy mb-2"><i class="fas fa-search me-2"></i>Key Findings:</h6>
+                                                <ul class="key-points-list ps-3">
+                                                    {% for point in evidence.key_points %}
+                                                    <li class="mb-2">{{ point }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="legal-assessment">
+                                                <h6 class="text-attorney-navy mb-2"><i class="fas fa-gavel me-2"></i>Legal Assessment:</h6>
+                                                <div class="legal-significance p-2 bg-light rounded mb-2">
+                                                    <p class="small mb-0"><strong>Legal Significance:</strong> {{ evidence.legal_significance }}</p>
+                                                </div>
+                                                <div class="strategic-importance p-2 bg-light rounded">
+                                                    <p class="small mb-0"><strong>Strategic Value:</strong> {{ evidence.strategic_importance }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="evidence-recommendations mt-3 p-3 border-top">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6 class="text-danger mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Potential Challenges:</h6>
+                                                <p class="small mb-0">{{ evidence.potential_challenges }}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="text-success mb-2"><i class="fas fa-lightbulb me-2"></i>Expert Recommendations:</h6>
+                                                <p class="small mb-0">{{ evidence.presentation_recommendations }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="alert alert-attorney-gold m-3">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-lightbulb fa-2x me-3 text-attorney-navy"></i>
+                                <div>
+                                    <h6 class="text-attorney-navy mb-1">Expert Investigator Recommendation</h6>
+                                    <p class="mb-0">To develop a comprehensive court strategy, proceed with organizing your evidence into structured exhibit groups by clicking "Organize into Exhibits" below.</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif has_relevance_analysis %}
+                        <div class="p-4 text-center">
+                            <div class="spinner-border text-attorney-gold mb-3" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <h6 class="text-attorney-navy mb-2">Professional Analysis in Progress</h6>
+                            <p class="text-muted mb-0">Your evidence is being analyzed by our advanced system. This process typically takes 30-60 seconds to complete. Please refresh the page momentarily.</p>
+                        </div>
+                    {% elif not evidence_items %}
+                        <div class="p-4 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-folder-open fa-3x text-muted"></i>
+                            </div>
+                            <h6 class="text-attorney-navy mb-2">No Evidence Available for Analysis</h6>
+                            <p class="text-muted mb-3">Please add evidence items to your case file before requesting a professional analysis.</p>
+                            <a href="{{ url_for('cases.upload_evidence', case_id=case.id) }}" class="btn btn-attorney-navy">
+                                <i class="fas fa-plus me-1"></i> Begin Evidence Collection
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="p-4">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-search fa-3x text-attorney-navy mb-3"></i>
+                                <h6 class="text-attorney-navy">Expert Evidence Analysis Available</h6>
+                                <p class="text-muted">Our advanced system will analyze your evidence with the precision of a professional investigator.</p>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-4 mb-3 mb-md-0">
+                                    <div class="feature-box p-3 text-center border rounded">
+                                        <i class="fas fa-balance-scale text-attorney-gold mb-2"></i>
+                                        <h6 class="small text-attorney-navy">Legal Relevance Scoring</h6>
+                                        <p class="small text-muted mb-0">Assessment of each item's importance to your legal case</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3 mb-md-0">
+                                    <div class="feature-box p-3 text-center border rounded">
+                                        <i class="fas fa-file-contract text-attorney-gold mb-2"></i>
+                                        <h6 class="small text-attorney-navy">Key Point Extraction</h6>
+                                        <p class="small text-muted mb-0">Identification of critical details within each piece of evidence</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="feature-box p-3 text-center border rounded">
+                                        <i class="fas fa-chess-knight text-attorney-gold mb-2"></i>
+                                        <h6 class="small text-attorney-navy">Strategic Guidance</h6>
+                                        <p class="small text-muted mb-0">Expert recommendations for effective evidence presentation</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <form method="post" action="{{ url_for('evidence_ai.evidence_analysis', case_id=case.id) }}">
+                                    <input type="hidden" name="analysis_type" value="evidence_relevance">
+                                    <button type="submit" class="btn btn-attorney-navy">
+                                        <i class="fas fa-microscope me-1"></i> Begin Professional Analysis
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exhibit Organization Section -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card border-attorney-gold">
+                <div class="card-header bg-attorney-gold text-attorney-navy d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0"><i class="fas fa-sitemap me-2"></i> Professional Exhibit Organization</h5>
+                        <small class="text-attorney-navy">Court-Ready Evidence Presentation Strategy</small>
+                    </div>
+                    {% if has_relevance_analysis and not has_exhibit_organization %}
+                    <form method="post" action="{{ url_for('evidence_ai.evidence_analysis', case_id=case.id) }}">
+                        <input type="hidden" name="analysis_type" value="exhibit_organization">
+                        <button type="submit" class="btn btn-attorney-navy btn-sm">
+                            <i class="fas fa-project-diagram me-1"></i> Organize Into Exhibits
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="card-body p-0">
+                    {% if exhibit_organization and exhibit_organization.get('exhibit_plan') %}
+                        <div class="p-3 border-bottom bg-light">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success fa-2x me-3"></i>
+                                <div>
+                                    <h6 class="mb-1 text-attorney-navy">Exhibit Organization Complete</h6>
+                                    <p class="mb-0 small">Your evidence has been professionally organized into strategic exhibit groups for maximum courtroom effectiveness</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="exhibit-strategy p-3">
+                            {% for group in exhibit_organization.get('exhibit_plan', []) %}
+                            <div class="exhibit-group-card mb-4 overflow-hidden">
+                                <div class="exhibit-header p-3 bg-attorney-navy text-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">{{ group.exhibit_group }}</h5>
+                                        <span class="badge bg-attorney-gold text-attorney-navy px-3 py-2">Exhibit Group {{ loop.index }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-3 border border-top-0 rounded-bottom">
+                                    <div class="row mb-3">
+                                        <div class="col-md-8">
+                                            <div class="exhibit-purpose p-3 bg-light rounded">
+                                                <h6 class="text-attorney-navy mb-2"><i class="fas fa-bullseye me-2"></i>Strategic Purpose:</h6>
+                                                <p class="mb-0">{{ group.strategic_purpose }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="evidence-items p-3 bg-light rounded h-100">
+                                                <h6 class="text-attorney-navy mb-2"><i class="fas fa-folder-open me-2"></i>Evidence Items:</h6>
+                                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                                    {% for item_id in group.evidence_items %}
+                                                    <span class="badge bg-attorney-navy p-2">Item #{{ item_id }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="exhibit-details mt-4">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <div class="presentation-strategy p-3 border rounded">
+                                                    <h6 class="text-attorney-navy mb-2"><i class="fas fa-sort-numeric-down me-2"></i>Presentation Strategy:</h6>
+                                                    <div class="presentation-order mb-3">
+                                                        <p class="small mb-1"><strong>Recommended Order:</strong></p>
+                                                        <p class="mb-0">{{ group.presentation_order }}</p>
+                                                    </div>
+                                                    <div class="introduction-strategy">
+                                                        <p class="small mb-1"><strong>Introduction Approach:</strong></p>
+                                                        <p class="mb-0">{{ group.introduction_strategy }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <div class="key-points p-3 border rounded h-100">
+                                                    <h6 class="text-attorney-navy mb-2"><i class="fas fa-star me-2"></i>Key Points to Emphasize:</h6>
+                                                    <ul class="mb-0 key-points-list">
+                                                        {% for point in group.key_points_to_emphasize %}
+                                                        <li class="mb-2">{{ point }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="p-3 bg-light border-top">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-gavel fa-2x me-3 text-attorney-navy"></i>
+                                <div>
+                                    <h6 class="text-attorney-navy mb-1">Expert Courtroom Strategy Guide</h6>
+                                    <p class="mb-2">This exhibit organization plan represents a strategic approach to presenting your evidence in court. It has been designed to create a compelling narrative that maximizes the persuasive impact of your evidence.</p>
+                                    <button class="btn btn-attorney-navy mt-2">
+                                        <i class="fas fa-file-pdf me-1"></i> Export Complete Strategy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif has_exhibit_organization %}
+                        <div class="p-4 text-center">
+                            <div class="spinner-border text-attorney-gold mb-3" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <h6 class="text-attorney-navy mb-2">Exhibit Organization in Progress</h6>
+                            <p class="text-muted mb-0">Your exhibit strategy is being carefully crafted. This process typically takes 30-60 seconds to complete. Please refresh the page momentarily.</p>
+                        </div>
+                    {% elif has_relevance_analysis %}
+                        <div class="p-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="me-3">
+                                    <i class="fas fa-sitemap fa-3x text-attorney-gold"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-attorney-navy mb-1">Ready for Strategic Exhibit Organization</h6>
+                                    <p class="mb-0">Your evidence analysis is complete. The next step is to organize your evidence into strategic exhibit groups for effective courtroom presentation.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="p-3 border rounded bg-light mb-4">
+                                <h6 class="text-attorney-navy"><i class="fas fa-lightbulb me-2"></i>What You'll Receive:</h6>
+                                <ul class="mb-0">
+                                    <li class="mb-2">Strategic grouping of evidence into compelling exhibit categories</li>
+                                    <li class="mb-2">Recommended presentation order for maximum persuasive impact</li>
+                                    <li class="mb-2">Introduction strategies for each exhibit group</li>
+                                    <li class="mb-2">Key points to emphasize for each piece of evidence</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="text-center">
+                                <form method="post" action="{{ url_for('evidence_ai.evidence_analysis', case_id=case.id) }}">
+                                    <input type="hidden" name="analysis_type" value="exhibit_organization">
+                                    <button type="submit" class="btn btn-attorney-navy">
+                                        <i class="fas fa-project-diagram me-1"></i> Create Exhibit Organization Plan
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="p-4 text-center">
+                            <div class="mb-3">
+                                <i class="fas fa-tasks fa-3x text-muted"></i>
+                            </div>
+                            <h6 class="text-attorney-navy mb-2">Evidence Analysis Required</h6>
+                            <p class="text-muted mb-0">Please complete the evidence relevance analysis above before proceeding with exhibit organization.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print & Export Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-attorney-navy">
+                <div class="card-header bg-attorney-navy text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-file-export me-2"></i> Professional Documentation</h5>
+                    <span class="badge bg-attorney-gold text-attorney-navy">Court-Ready Files</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3 mb-3 mb-lg-0">
+                            <div class="text-center p-3">
+                                <i class="fas fa-file-pdf fa-3x text-attorney-navy mb-3"></i>
+                                <h6>Evidence Reports</h6>
+                                <p class="small text-muted mb-3">Professional analysis documents for court submission.</p>
+                                <button class="btn btn-attorney-navy w-100" {% if not has_relevance_analysis %}disabled{% endif %}>
+                                    <i class="fas fa-download me-1"></i> Export Analysis
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 mb-3 mb-lg-0">
+                            <div class="text-center p-3">
+                                <i class="fas fa-sitemap fa-3x text-attorney-navy mb-3"></i>
+                                <h6>Exhibit Strategy</h6>
+                                <p class="small text-muted mb-3">Detailed exhibit organization for case presentation.</p>
+                                <button class="btn btn-attorney-navy w-100" {% if not has_exhibit_organization %}disabled{% endif %}>
+                                    <i class="fas fa-download me-1"></i> Export Strategy
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 mb-3 mb-lg-0">
+                            <div class="text-center p-3">
+                                <i class="fas fa-print fa-3x text-attorney-navy mb-3"></i>
+                                <h6>Print Portfolio</h6>
+                                <p class="small text-muted mb-3">Complete printable case portfolio with all reports.</p>
+                                <button class="btn btn-attorney-navy w-100" {% if not has_exhibit_organization %}disabled{% endif %}>
+                                    <i class="fas fa-print me-1"></i> Print All
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="text-center p-3">
+                                <i class="fas fa-briefcase fa-3x text-attorney-navy mb-3"></i>
+                                <h6>Litigation Package</h6>
+                                <p class="small text-muted mb-3">Ready-to-use package with evidence and filing documents.</p>
+                                <button class="btn btn-attorney-navy w-100" {% if not has_exhibit_organization %}disabled{% endif %}>
+                                    <i class="fas fa-briefcase me-1"></i> Complete Package
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <p class="small text-muted"><i class="fas fa-lock me-1"></i> All exports comply with legal documentation standards for court submission.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // This would be for print functionality
+        const printButtons = document.querySelectorAll('.btn-outline-dark');
+        printButtons.forEach(button => {
+            if (!button.disabled) {
+                button.addEventListener('click', function() {
+                    window.print();
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Due Process AI - Premium Features{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h1 class="text-attorney-navy display-4">Premium Features</h1>
+            <p class="lead">Unlock advanced legal tools to strengthen your case</p>
+            <hr class="bg-attorney-gold" style="height: 2px; width: 100px; margin: 20px auto;">
+        </div>
+    </div>
+    
+    <!-- Premium Features -->
+    <div class="row mb-5">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-attorney-gold shadow-sm">
+                <div class="card-header bg-attorney-gold text-dark">
+                    <h4 class="my-0 font-weight-bold">Advanced Strategy Analysis</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-chess fa-4x text-attorney-navy"></i>
+                    </div>
+                    <p>Get comprehensive strategic analysis for your case, including detailed procedural motions, evidence challenges, and jurisdiction-specific tactics.</p>
+                    <p>Our AI identifies the most effective defense strategies tailored to your specific circumstances.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-attorney-gold shadow-sm">
+                <div class="card-header bg-attorney-gold text-dark">
+                    <h4 class="my-0 font-weight-bold">Success Probability Calculation</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-chart-line fa-4x text-attorney-navy"></i>
+                    </div>
+                    <p>Our advanced AI analyzes thousands of similar cases to calculate your probability of success with different strategies.</p>
+                    <p>Receive detailed insights on which approaches have the highest chance of winning based on historical outcomes.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-attorney-gold shadow-sm">
+                <div class="card-header bg-attorney-gold text-dark">
+                    <h4 class="my-0 font-weight-bold">Premium Evidence Analysis</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-search-plus fa-4x text-attorney-navy"></i>
+                    </div>
+                    <p>Get detailed forensic-level analysis of all evidence in your case, including advanced procedural violations and technical grounds for suppression.</p>
+                    <p>Identify subtle constitutional violations that could lead to evidence being thrown out.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-attorney-gold shadow-sm">
+                <div class="card-header bg-attorney-gold text-dark">
+                    <h4 class="my-0 font-weight-bold">Advanced Document Generation</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-file-signature fa-4x text-attorney-navy"></i>
+                    </div>
+                    <p>Access expanded document templates for complex filings, including specialized motions, detailed briefs, and advanced pleadings.</p>
+                    <p>Premium documents include jurisdiction-specific language and advanced legal arguments.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-attorney-gold shadow-sm">
+                <div class="card-header bg-attorney-gold text-dark">
+                    <h4 class="my-0 font-weight-bold">Strategic Timeline Planning</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-clock fa-4x text-attorney-navy"></i>
+                    </div>
+                    <p>Receive advanced timeline analysis with strategic timing recommendations for filings, evidence submissions, and motions.</p>
+                    <p>Our AI helps you identify optimal timing windows for each legal action to maximize effectiveness.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-attorney-gold shadow-sm">
+                <div class="card-header bg-attorney-gold text-dark">
+                    <h4 class="my-0 font-weight-bold">Media Transcription & Analysis</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-headphones-alt fa-4x text-attorney-navy"></i>
+                    </div>
+                    <p>Premium members receive unlimited audio/video transcription with advanced legal analysis of spoken content.</p>
+                    <p>Identify actionable insights from recorded interviews, police interactions, and court proceedings.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pricing Section -->
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h2 class="text-attorney-navy">Premium Subscription Plans</h2>
+            <p class="lead text-muted">Choose the plan that works best for you</p>
+            <hr class="bg-attorney-gold" style="height: 2px; width: 100px; margin: 20px auto;">
+        </div>
+    </div>
+    
+    <div class="row mb-5 justify-content-center">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-attorney-gold shadow">
+                <div class="card-header bg-attorney-gold text-dark text-center">
+                    <h4 class="my-0 font-weight-bold">Monthly</h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title text-center">$50<small class="text-muted">/month</small></h1>
+                    <ul class="list-unstyled mt-3 mb-4">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i> All premium features</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i> Unlimited case analysis</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i> Cancel anytime</li>
+                    </ul>
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('stripe.stripe_subscription') }}" class="btn btn-lg btn-block btn-attorney-navy">Subscribe Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-attorney-gold shadow" style="transform: scale(1.05); z-index: 1;">
+                <div class="card-header bg-attorney-gold text-dark text-center">
+                    <span class="badge bg-attorney-navy text-white position-absolute" style="top: -10px; right: 20px;">Best Value</span>
+                    <h4 class="my-0 font-weight-bold">Annual</h4>
+                </div>
+                <div class="card-body">
+                    <h1 class="card-title text-center">$500<small class="text-muted">/year</small></h1>
+                    <div class="text-center mb-3">
+                        <span class="badge bg-success text-white">Save $100</span>
+                    </div>
+                    <ul class="list-unstyled mt-3 mb-4">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i> All premium features</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i> Unlimited case analysis</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success mr-2"></i> Priority support</li>
+                    </ul>
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('stripe.stripe_subscription') }}" class="btn btn-lg btn-block btn-attorney-navy">Subscribe Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fee Waiver Section -->
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-8">
+            <div class="card border-attorney-navy shadow-sm">
+                <div class="card-header bg-attorney-navy text-white">
+                    <h4 class="mb-0"><i class="fas fa-balance-scale mr-2"></i> Indigent Fee Waiver Program</h4>
+                </div>
+                <div class="card-body">
+                    <p>Due Process AI is committed to ensuring equal access to justice for everyone, regardless of financial circumstances. If you cannot afford the premium subscription fee due to financial hardship, you may qualify for our indigent fee waiver program.</p>
+                    
+                    <p>To apply for a fee waiver, you will need to:</p>
+                    <ol>
+                        <li>Provide a brief explanation of your financial situation</li>
+                        <li>Certify that you are unable to afford the subscription fee</li>
+                    </ol>
+                    
+                    <p>Applications are typically reviewed within 3-5 business days. If approved, you'll receive full access to all premium features at no cost.</p>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('subscriptions.fee_waiver_application') }}" class="btn btn-outline-attorney-navy">
+                            <i class="fas fa-hand-holding-heart mr-2"></i> Apply for Fee Waiver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}Due Process AI - Manage Fee Waivers{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Manage Fee Waivers</li>
+                </ol>
+            </nav>
+            
+            <h1 class="text-attorney-navy">Manage Fee Waivers</h1>
+            <p class="lead">Review and process indigent fee waiver applications</p>
+            <hr class="bg-attorney-gold" style="height: 2px; width: 100px;">
+        </div>
+    </div>
+    
+    <!-- Pending Waivers Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-warning shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">Pending Applications ({{ pending_waivers|length }})</h4>
+                </div>
+                <div class="card-body">
+                    {% if pending_waivers %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Submitted</th>
+                                        <th>Subscription Type</th>
+                                        <th>Income Info</th>
+                                        <th>Reason</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for waiver in pending_waivers %}
+                                    <tr>
+                                        <td>{{ waiver.subscriber.username }}</td>
+                                        <td>{{ waiver.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td class="text-capitalize">{{ waiver.subscription_type }}</td>
+                                        <td>
+                                            {% if waiver.annual_income and waiver.household_size %}
+                                                {% set poverty_threshold = get_poverty_threshold(waiver.household_size) %}
+                                                {% set poverty_percentage = (waiver.annual_income / poverty_threshold) * 100 %}
+                                                {% set suggested_waiver = calculate_fee_waiver_percentage(waiver.annual_income, waiver.household_size) %}
+                                                <div>
+                                                    <strong>Income:</strong> ${{ "%.2f"|format(waiver.annual_income) }}<br>
+                                                    <strong>Household:</strong> {{ waiver.household_size }} {% if waiver.household_size == 1 %}person{% else %}people{% endif %}<br>
+                                                    <strong>% of Poverty:</strong> {{ "%.1f"|format(poverty_percentage) }}%<br>
+                                                    <strong>Suggested:</strong> 
+                                                    <span class="badge {% if suggested_waiver == 100 %}bg-success{% elif suggested_waiver > 0 %}bg-info{% else %}bg-secondary{% endif %}">
+                                                        {{ suggested_waiver }}% waiver
+                                                    </span>
+                                                </div>
+                                            {% else %}
+                                                <em>No income information provided</em>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#reason-{{ waiver.id }}">
+                                                View Reason
+                                            </button>
+                                            <div class="collapse mt-2" id="reason-{{ waiver.id }}">
+                                                <div class="card card-body bg-light">
+                                                    {{ waiver.fee_waiver_reason }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#reviewModal-{{ waiver.id }}">
+                                                Review Application
+                                            </button>
+                                            
+                                            <form action="{{ url_for('subscriptions.approve_waiver', subscription_id=waiver.id) }}" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-success">Quick Approve</button>
+                                            </form>
+                                            
+                                            <!-- Review Modal -->
+                                            <div class="modal fade" id="reviewModal-{{ waiver.id }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header bg-attorney-navy text-white">
+                                                            <h5 class="modal-title">Review Fee Waiver Application</h5>
+                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="row mb-4">
+                                                                <div class="col-md-6">
+                                                                    <h5>Applicant Information</h5>
+                                                                    <ul class="list-group list-group-flush">
+                                                                        <li class="list-group-item d-flex justify-content-between">
+                                                                            <strong>User:</strong>
+                                                                            <span>{{ waiver.subscriber.username }}</span>
+                                                                        </li>
+                                                                        <li class="list-group-item d-flex justify-content-between">
+                                                                            <strong>Email:</strong>
+                                                                            <span>{{ waiver.subscriber.email }}</span>
+                                                                        </li>
+                                                                        <li class="list-group-item d-flex justify-content-between">
+                                                                            <strong>Application Date:</strong>
+                                                                            <span>{{ waiver.created_at.strftime('%Y-%m-%d') }}</span>
+                                                                        </li>
+                                                                        <li class="list-group-item d-flex justify-content-between">
+                                                                            <strong>Subscription Type:</strong>
+                                                                            <span class="text-capitalize">{{ waiver.subscription_type }}</span>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                                
+                                                                <div class="col-md-6">
+                                                                    <h5>Financial Information</h5>
+                                                                    {% if waiver.annual_income and waiver.household_size %}
+                                                                        {% set poverty_threshold = get_poverty_threshold(waiver.household_size) %}
+                                                                        {% set poverty_percentage = (waiver.annual_income / poverty_threshold) * 100 %}
+                                                                        {% set suggested_waiver = calculate_fee_waiver_percentage(waiver.annual_income, waiver.household_size) %}
+                                                                        
+                                                                        <ul class="list-group list-group-flush">
+                                                                            <li class="list-group-item d-flex justify-content-between">
+                                                                                <strong>Annual Income:</strong>
+                                                                                <span>${{ "%.2f"|format(waiver.annual_income) }}</span>
+                                                                            </li>
+                                                                            <li class="list-group-item d-flex justify-content-between">
+                                                                                <strong>Household Size:</strong>
+                                                                                <span>{{ waiver.household_size }} people</span>
+                                                                            </li>
+                                                                            <li class="list-group-item d-flex justify-content-between">
+                                                                                <strong>Poverty Threshold:</strong>
+                                                                                <span>${{ "%.2f"|format(poverty_threshold) }}</span>
+                                                                            </li>
+                                                                            <li class="list-group-item d-flex justify-content-between">
+                                                                                <strong>% of Poverty Line:</strong>
+                                                                                <span>{{ "%.1f"|format(poverty_percentage) }}%</span>
+                                                                            </li>
+                                                                            <li class="list-group-item d-flex justify-content-between">
+                                                                                <strong>Suggested Waiver:</strong>
+                                                                                <span class="badge {% if suggested_waiver == 100 %}bg-success{% else %}bg-secondary{% endif %} fs-6">
+                                                                                    {% if suggested_waiver == 100 %}Eligible{% else %}Not Eligible{% endif %}
+                                                                                </span>
+                                                                            </li>
+                                                                        </ul>
+                                                                    {% else %}
+                                                                        <div class="alert alert-warning">
+                                                                            <i class="fas fa-exclamation-triangle me-2"></i> 
+                                                                            No income information provided with this application.
+                                                                        </div>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="mb-4">
+                                                                <h5>Applicant's Reason</h5>
+                                                                <div class="card bg-light">
+                                                                    <div class="card-body">
+                                                                        {{ waiver.fee_waiver_reason }}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <form action="{{ url_for('subscriptions.manage_fee_waivers') }}" method="post">
+                                                                <input type="hidden" name="subscription_id" value="{{ waiver.id }}">
+                                                                {{ waiver_forms[waiver.id].hidden_tag() }}
+                                                                
+                                                                <div class="row mb-4">
+                                                                    <div class="col-md-6">
+                                                                        <div class="mb-3">
+                                                                            {{ waiver_forms[waiver.id].waiver_percentage.label(class="form-label") }}
+                                                                            {{ waiver_forms[waiver.id].waiver_percentage(class="form-select") }}
+                                                                        </div>
+                                                                        
+                                                                        <div class="mb-3">
+                                                                            {{ waiver_forms[waiver.id].decision.label(class="form-label") }}
+                                                                            {% for option in waiver_forms[waiver.id].decision %}
+                                                                            <div class="form-check">
+                                                                                {{ option(class="form-check-input") }}
+                                                                                {{ option.label(class="form-check-label") }}
+                                                                            </div>
+                                                                            {% endfor %}
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <div class="col-md-6">
+                                                                        <div class="mb-3">
+                                                                            {{ waiver_forms[waiver.id].notes.label(class="form-label") }}
+                                                                            {{ waiver_forms[waiver.id].notes(class="form-control", rows=5) }}
+                                                                        </div>
+                                                                        
+                                                                        <div class="mb-3">
+                                                                            <div class="form-check">
+                                                                                {{ waiver_forms[waiver.id].income_verified(class="form-check-input") }}
+                                                                                {{ waiver_forms[waiver.id].income_verified.label(class="form-check-label") }}
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                        <div class="mb-3">
+                                                                            <div class="form-check">
+                                                                                {{ waiver_forms[waiver.id].request_documentation(class="form-check-input") }}
+                                                                                {{ waiver_forms[waiver.id].request_documentation.label(class="form-check-label") }}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <div class="d-flex justify-content-end">
+                                                                    <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+                                                                    {{ waiver_forms[waiver.id].submit(class="btn btn-primary") }}
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Deny Modal -->
+                                            <div class="modal fade" id="denyModal-{{ waiver.id }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Deny Fee Waiver</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="{{ url_for('subscriptions.approve_waiver', subscription_id=waiver.id) }}" method="post">
+                                                                <input type="hidden" name="decision" value="deny">
+                                                                <div class="mb-3">
+                                                                    <label for="deny-reason-{{ waiver.id }}" class="form-label">Reason for denial</label>
+                                                                    <textarea class="form-control" id="deny-reason-{{ waiver.id }}" name="deny_reason" rows="3" required></textarea>
+                                                                </div>
+                                                                <div class="d-flex justify-content-end">
+                                                                    <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+                                                                    <button type="submit" class="btn btn-danger">Deny Application</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> There are no pending fee waiver applications at this time.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recently Approved Waivers Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-success shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Recently Approved Waivers</h4>
+                </div>
+                <div class="card-body">
+                    {% if approved_waivers %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Approved Date</th>
+                                        <th>Approved By</th>
+                                        <th>Subscription Type</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for waiver in approved_waivers %}
+                                    <tr>
+                                        <td>{{ waiver.subscriber.username }}</td>
+                                        <td>{{ waiver.updated_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ waiver.reviewer.username if waiver.reviewer else 'System' }}</td>
+                                        <td class="text-capitalize">{{ waiver.subscription_type }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#approved-reason-{{ waiver.id }}">
+                                                View Details
+                                            </button>
+                                            <div class="collapse mt-2" id="approved-reason-{{ waiver.id }}">
+                                                <div class="card card-body bg-light">
+                                                    {{ waiver.fee_waiver_reason }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> There are no recently approved fee waivers.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

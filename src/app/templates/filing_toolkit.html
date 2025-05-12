@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Filing Toolkit - Due Process AI{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('cases.dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Filing Toolkit</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-dark text-white">
+                <h3 class="mb-0">Legal Document Generator</h3>
+            </div>
+            <div class="card-body">
+                <p class="lead">Generate professional legal documents tailored to your case.</p>
+                
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.case_id.label(class="form-label") }}
+                        {% if form.case_id.errors %}
+                            {{ form.case_id(class="form-select is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.case_id.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.case_id(class="form-select") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.state.label(class="form-label") }}
+                            {% if form.state.errors %}
+                                {{ form.state(class="form-select is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.state.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.state(class="form-select") }}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.court_type.label(class="form-label") }}
+                            {% if form.court_type.errors %}
+                                {{ form.court_type(class="form-select is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.court_type.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.court_type(class="form-select") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.form_type.label(class="form-label") }}
+                        {% if form.form_type.errors %}
+                            {{ form.form_type(class="form-select is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.form_type.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.form_type(class="form-select") }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.deadline_date.label(class="form-label") }}
+                        {% if form.deadline_date.errors %}
+                            {{ form.deadline_date(class="form-control is-invalid", type="date") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.deadline_date.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.deadline_date(class="form-control", type="date") }}
+                        {% endif %}
+                        <div class="form-text">
+                            Optional: Set a deadline date to trigger the deadline calculator
+                        </div>
+                    </div>
+                    
+                    <div id="deadlineInfo" class="alert alert-info mb-4" style="display: none;">
+                        <h5><i class="fas fa-calendar-alt me-2"></i> Deadline Information</h5>
+                        <div id="deadlineContent">
+                            <!-- This will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div id="caseSummary" class="mb-4" style="display: none;">
+                        <h5>Case Summary</h5>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div id="caseSummaryContent">
+                                    <!-- This will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">Document Types</h4>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="documentTypesAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                Motion to Quash Warrant
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#documentTypesAccordion">
+                            <div class="accordion-body">
+                                A legal request asking the court to void or "quash" a search or arrest warrant. Used when a warrant was improperly issued or executed.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                Civil Cover Sheet
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#documentTypesAccordion">
+                            <div class="accordion-body">
+                                A standardized form that accompanies a civil complaint when filed in court. It provides a summary of the case and helps court clerks categorize and process the case.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                §1983 Complaint
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#documentTypesAccordion">
+                            <div class="accordion-body">
+                                A legal complaint filed under 42 U.S.C. § 1983, which allows individuals to sue government officials or entities for civil rights violations committed under color of law.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                                Other Document Types
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#documentTypesAccordion">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Habeas Corpus Petition</li>
+                                    <li class="list-group-item">Discovery Request</li>
+                                    <li class="list-group-item">Motion to Dismiss</li>
+                                    <li class="list-group-item">Answer to Complaint</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">Tips for Filing</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Double-check all court information before filing
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Make sure all parties are properly identified
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Include all required information for your jurisdiction
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Keep track of all filing deadlines
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Be concise and specific in your descriptions
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        {% if current_user.is_premium() %}
+        <div class="card shadow border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0"><i class="fas fa-star me-2"></i> Premium Features</h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">As a premium user, you have access to:</p>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item">Advanced document templates</li>
+                    <li class="list-group-item">AI-assisted document drafting</li>
+                    <li class="list-group-item">Priority document processing</li>
+                    <li class="list-group-item">Unlimited document downloads</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Case selection and display
+    document.addEventListener('DOMContentLoaded', function() {
+        const caseSelect = document.getElementById('case_id');
+        const caseSummary = document.getElementById('caseSummary');
+        const caseSummaryContent = document.getElementById('caseSummaryContent');
+        const deadlineDate = document.getElementById('deadline_date');
+        const deadlineInfo = document.getElementById('deadlineInfo');
+        const deadlineContent = document.getElementById('deadlineContent');
+        
+        // Cases data (would be populated from the backend in a real app)
+        const cases = {
+            {% for case in user_cases %}
+            '{{ case.id }}': {
+                title: '{{ case.title }}',
+                description: '{{ case.description[:150] + "..." if case.description|length > 150 else case.description }}',
+                courtType: '{{ case.court_type|replace("_", " ")|title }}',
+                issueType: '{{ case.issue_type|replace("_", " ")|title }}',
+                evidence: {{ case.evidence|length }},
+                created: '{{ case.created_at.strftime("%Y-%m-%d") }}'
+            },
+            {% endfor %}
+        };
+        
+        // Update case summary when case is selected
+        if (caseSelect) {
+            caseSelect.addEventListener('change', function() {
+                const selectedCase = caseSelect.value;
+                if (selectedCase && cases[selectedCase]) {
+                    const caseData = cases[selectedCase];
+                    caseSummaryContent.innerHTML = `
+                        <h6>${caseData.title}</h6>
+                        <p class="mb-2"><strong>Court:</strong> ${caseData.courtType} | <strong>Issue:</strong> ${caseData.issueType}</p>
+                        <p class="mb-2"><strong>Evidence Files:</strong> ${caseData.evidence}</p>
+                        <p class="mb-0"><strong>Description:</strong> ${caseData.description}</p>
+                    `;
+                    caseSummary.style.display = 'block';
+                } else {
+                    caseSummary.style.display = 'none';
+                }
+            });
+        }
+        
+        // Update deadline information when date is selected
+        if (deadlineDate) {
+            deadlineDate.addEventListener('change', function() {
+                if (deadlineDate.value) {
+                    const selected = new Date(deadlineDate.value);
+                    const today = new Date();
+                    const daysRemaining = Math.ceil((selected - today) / (1000 * 60 * 60 * 24));
+                    
+                    let status = 'text-success';
+                    let statusMessage = 'Plenty of time remaining';
+                    
+                    if (daysRemaining < 0) {
+                        status = 'text-danger';
+                        statusMessage = 'Deadline has passed!';
+                    } else if (daysRemaining < 7) {
+                        status = 'text-danger';
+                        statusMessage = 'Urgent - deadline approaching!';
+                    } else if (daysRemaining < 14) {
+                        status = 'text-warning';
+                        statusMessage = 'Approaching deadline';
+                    }
+                    
+                    deadlineContent.innerHTML = `
+                        <p class="mb-1"><strong>Selected Deadline:</strong> ${selected.toLocaleDateString()}</p>
+                        <p class="mb-1"><strong>Days Remaining:</strong> <span class="${status}">${daysRemaining} days</span></p>
+                        <p class="mb-0"><strong>Status:</strong> <span class="${status}">${statusMessage}</span></p>
+                    `;
+                    deadlineInfo.style.display = 'block';
+                } else {
+                    deadlineInfo.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

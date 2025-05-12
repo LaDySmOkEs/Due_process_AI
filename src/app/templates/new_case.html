@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Start a New Case - Due Process AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h3 class="mb-0">Start a New Case</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {% if form.title.errors %}
+                            {{ form.title(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.title(class="form-control") }}
+                        {% endif %}
+                        <div class="form-text">Enter a descriptive title for your case</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.court_type.label(class="form-label") }}
+                            {% if form.court_type.errors %}
+                                {{ form.court_type(class="form-select is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.court_type.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.court_type(class="form-select") }}
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.issue_type.label(class="form-label") }}
+                            {% if form.issue_type.errors %}
+                                {{ form.issue_type(class="form-select is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.issue_type.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.issue_type(class="form-select") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.description.label(class="form-label") }}
+                        {% if form.description.errors %}
+                            {{ form.description(class="form-control is-invalid", rows=6) }}
+                            <div class="invalid-feedback">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.description(class="form-control", rows=6) }}
+                        {% endif %}
+                        <div class="form-text">
+                            Provide a detailed description of your case including relevant facts, dates, and parties involved. 
+                            This information will be used to help generate appropriate documents.
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('cases.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                        </a>
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

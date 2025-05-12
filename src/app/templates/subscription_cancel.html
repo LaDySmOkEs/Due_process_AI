@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Due Process AI - Subscription Cancelled{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <div class="card shadow-lg">
+                <div class="card-header bg-secondary text-white">
+                    <h2 class="mb-0">Subscription Cancelled</h2>
+                </div>
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-times-circle text-secondary fa-5x"></i>
+                    </div>
+                    
+                    <h3 class="mb-4">Your Subscription Process Was Cancelled</h3>
+                    <p class="lead mb-4">You have not been charged, and no subscription has been activated.</p>
+                    
+                    <div class="alert alert-info mb-4">
+                        <p class="mb-0">You can subscribe to our premium plan at any time when you're ready.</p>
+                    </div>
+                    
+                    <div class="d-grid gap-3">
+                        <a href="{{ url_for('cases.dashboard') }}" class="btn btn-lg btn-primary">
+                            <i class="fas fa-home me-2"></i> Return to Dashboard
+                        </a>
+                        <a href="{{ url_for('stripe.stripe_subscription') }}" class="btn btn-outline-attorney-navy">
+                            <i class="fas fa-crown me-2"></i> Try Again
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

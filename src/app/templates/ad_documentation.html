@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Due Process AI - Ad Campaign Setup Guide{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="text-attorney-navy">Ad Campaign Setup Guide</h1>
+            <p class="lead">Instructions for linking social media ads to Due Process AI</p>
+            <hr class="bg-attorney-gold" style="height: 2px; width: 100px;">
+            
+            <div class="alert alert-info mb-4">
+                <i class="fas fa-info-circle me-2"></i> This guide is for marketing team members setting up ad campaigns that link to our application.
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-attorney-navy text-white">
+                    <h3 class="mb-0">Campaign Landing URLs</h3>
+                </div>
+                <div class="card-body">
+                    <p>Use these specially formatted URLs in your ads to track campaign performance and provide customized landing pages:</p>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Campaign ID</th>
+                                    <th>Description</th>
+                                    <th>Landing URL</th>
+                                    <th>Copy</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>legal_partner</code></td>
+                                    <td>"Your AI Legal Partner That Fights For You"</td>
+                                    <td><code>{{ url_for('ad_tracking.ad_landing', campaign_id='legal_partner', _external=True) }}</code></td>
+                                    <td><button class="btn btn-sm btn-outline-primary copy-btn" data-url="{{ url_for('ad_tracking.ad_landing', campaign_id='legal_partner', _external=True) }}"><i class="fas fa-copy"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>lost_system</code></td>
+                                    <td>"Feeling Lost In The Legal System?"</td>
+                                    <td><code>{{ url_for('ad_tracking.ad_landing', campaign_id='lost_system', _external=True) }}</code></td>
+                                    <td><button class="btn btn-sm btn-outline-primary copy-btn" data-url="{{ url_for('ad_tracking.ad_landing', campaign_id='lost_system', _external=True) }}"><i class="fas fa-copy"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>evidence</code></td>
+                                    <td>"Evidence Analysis That Leaves Nothing Unexamined"</td>
+                                    <td><code>{{ url_for('ad_tracking.ad_landing', campaign_id='evidence', _external=True) }}</code></td>
+                                    <td><button class="btn btn-sm btn-outline-primary copy-btn" data-url="{{ url_for('ad_tracking.ad_landing', campaign_id='evidence', _external=True) }}"><i class="fas fa-copy"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>jargon</code></td>
+                                    <td>"Legal Jargon Confusing You?"</td>
+                                    <td><code>{{ url_for('ad_tracking.ad_landing', campaign_id='jargon', _external=True) }}</code></td>
+                                    <td><button class="btn btn-sm btn-outline-primary copy-btn" data-url="{{ url_for('ad_tracking.ad_landing', campaign_id='jargon', _external=True) }}"><i class="fas fa-copy"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>rights</code></td>
+                                    <td>"Your Rights Matter. Protect Them."</td>
+                                    <td><code>{{ url_for('ad_tracking.ad_landing', campaign_id='rights', _external=True) }}</code></td>
+                                    <td><button class="btn btn-sm btn-outline-primary copy-btn" data-url="{{ url_for('ad_tracking.ad_landing', campaign_id='rights', _external=True) }}"><i class="fas fa-copy"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>defender</code></td>
+                                    <td>"The Public Defender Alternative"</td>
+                                    <td><code>{{ url_for('ad_tracking.ad_landing', campaign_id='defender', _external=True) }}</code></td>
+                                    <td><button class="btn btn-sm btn-outline-primary copy-btn" data-url="{{ url_for('ad_tracking.ad_landing', campaign_id='defender', _external=True) }}"><i class="fas fa-copy"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>win_case</code></td>
+                                    <td>"Win Your Case Without A Law Degree"</td>
+                                    <td><code>{{ url_for('ad_tracking.ad_landing', campaign_id='win_case', _external=True) }}</code></td>
+                                    <td><button class="btn btn-sm btn-outline-primary copy-btn" data-url="{{ url_for('ad_tracking.ad_landing', campaign_id='win_case', _external=True) }}"><i class="fas fa-copy"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>overlooked</code></td>
+                                    <td>"Evidence That Could Win Your Case Is Being Overlooked"</td>
+                                    <td><code>{{ url_for('ad_tracking.ad_landing', campaign_id='overlooked', _external=True) }}</code></td>
+                                    <td><button class="btn btn-sm btn-outline-primary copy-btn" data-url="{{ url_for('ad_tracking.ad_landing', campaign_id='overlooked', _external=True) }}"><i class="fas fa-copy"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td><code>faith_justice</code></td>
+                                    <td>"Justice For All: Faith-Based Principles In Legal Advocacy"</td>
+                                    <td><code>{{ url_for('ad_tracking.ad_landing', campaign_id='faith_justice', _external=True) }}</code></td>
+                                    <td><button class="btn btn-sm btn-outline-primary copy-btn" data-url="{{ url_for('ad_tracking.ad_landing', campaign_id='faith_justice', _external=True) }}"><i class="fas fa-copy"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-success mt-3">
+                        <strong>Status:</strong> All URLs on this page are automatically generated with your application's current domain.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-attorney-navy text-white">
+                    <h3 class="mb-0">Adding UTM Parameters</h3>
+                </div>
+                <div class="card-body">
+                    <p>For better tracking, add UTM parameters to your campaign URLs:</p>
+                    
+                    <h5>Example with UTM parameters:</h5>
+                    <pre><code>{{ url_for('ad_tracking.ad_landing', campaign_id='legal_partner', _external=True) }}?utm_source=facebook&utm_medium=cpc&utm_content=legal_ad_1</code></pre>
+                    
+                    <h5>Required UTM Parameters:</h5>
+                    <ul>
+                        <li><code>utm_source</code>: The platform (facebook, instagram, twitter, linkedin, etc.)</li>
+                        <li><code>utm_medium</code>: The ad type (cpc, display, social, email, etc.)</li>
+                        <li><code>utm_content</code>: Specific ad identifier (ad_1, video_ad, etc.)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-attorney-navy text-white">
+                    <h3 class="mb-0">Campaign Analytics</h3>
+                </div>
+                <div class="card-body">
+                    <p>The system automatically tracks:</p>
+                    
+                    <ul>
+                        <li>Click-through rates from each campaign</li>
+                        <li>Conversion rates (registrations and premium subscriptions)</li>
+                        <li>Traffic source analytics</li>
+                    </ul>
+                    
+                    <p>Analytics data will be available in a future admin dashboard.</p>
+                    
+                    <div class="alert alert-success mt-3">
+                        <strong>Pro Tip:</strong> Use A/B testing with different campaign IDs to determine which messaging resonates most with your audience.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyButtons = document.querySelectorAll('.copy-btn');
+        
+        copyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Get the URL from the code element in the same row
+                const urlElement = this.closest('tr').querySelector('td:nth-child(3) code');
+                const url = urlElement.textContent.trim();
+                
+                // Copy to clipboard
+                navigator.clipboard.writeText(url).then(
+                    function() {
+                        // Success! 
+                        const originalHtml = button.innerHTML;
+                        button.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            button.innerHTML = originalHtml;
+                        }, 2000);
+                    },
+                    function() {
+                        // Fallback for browsers that don't support clipboard API
+                        const textarea = document.createElement('textarea');
+                        textarea.value = url;
+                        textarea.style.position = 'fixed';  // Prevent scrolling to bottom
+                        document.body.appendChild(textarea);
+                        textarea.focus();
+                        textarea.select();
+                        
+                        try {
+                            document.execCommand('copy');
+                            const originalHtml = button.innerHTML;
+                            button.innerHTML = '<i class="fas fa-check"></i>';
+                            setTimeout(() => {
+                                button.innerHTML = originalHtml;
+                            }, 2000);
+                        } catch (err) {
+                            alert('Failed to copy: ' + err);
+                        }
+                        
+                        document.body.removeChild(textarea);
+                    }
+                );
+            });
+        });
+    });
+</script>
+{% endblock %}

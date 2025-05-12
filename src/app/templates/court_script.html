@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block title %}Court Script - Due Process AI{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('cases.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('cases.case_summary', case_id=case.id) }}">{{ case.title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Court Script</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-3">Court Appearance Script</h1>
+            <h4 class="text-muted">{{ case.title }}</h4>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{{ url_for('cases.case_summary', case_id=case.id) }}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left"></i> Back to Case
+            </a>
+        </div>
+    </div>
+
+    {% if not has_interview_analysis %}
+    <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle"></i> 
+        You haven't completed the client interview for this case yet. For best results, 
+        <a href="{{ url_for('client_interview.case_interview', case_id=case.id) }}">complete the interview</a> 
+        first to identify potential rights violations that can be incorporated into your court script.
+    </div>
+    {% endif %}
+
+    {% if not script %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="card-title mb-0">Generate Court Script</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('court_script.generate_script', case_id=case.id) }}">
+                <div class="form-group mb-3">
+                    <label for="proceeding_type" class="form-label"><strong>Select Court Proceeding Type</strong></label>
+                    <select name="proceeding_type" id="proceeding_type" class="form-select" required>
+                        <option value="" selected disabled>Select proceeding type...</option>
+                        <option value="arraignment">Arraignment</option>
+                        <option value="bail_hearing">Bail Hearing</option>
+                        <option value="preliminary_hearing">Preliminary Hearing</option>
+                        <option value="motion_hearing">Motion Hearing</option>
+                        <option value="suppression_hearing">Suppression Hearing</option>
+                        <option value="trial">Trial</option>
+                        <option value="sentencing">Sentencing</option>
+                    </select>
+                    <div class="form-text">Choose the type of court proceeding you're preparing for.</div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="additional_context" class="form-label"><strong>Additional Context (Optional)</strong></label>
+                    <textarea name="additional_context" id="additional_context" class="form-control" rows="5" placeholder="Add any specific details, concerns, or questions about the proceeding..."></textarea>
+                    <div class="form-text">
+                        Include any specific details about your case that might affect your court appearance, 
+                        such as unique procedural issues, evidence concerns, or specific arguments you plan to make.
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-gavel me-2"></i> Generate Court Script
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="card-title mb-0">{{ script.script_title }}</h4>
+            <div>
+                <button class="btn btn-light btn-sm print-script me-2" onclick="window.print();">
+                    <i class="fas fa-print"></i> Print
+                </button>
+                <a href="{{ url_for('court_script.generate_script', case_id=case.id) }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-sync-alt"></i> Generate New Script
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Preparation Steps -->
+            <section id="preparation" class="mb-5">
+                <h3 class="border-bottom pb-2 mb-3">
+                    <i class="fas fa-clipboard-check me-2"></i> Preparation Before Court
+                </h3>
+                {% for item in script.preparation %}
+                <div class="preparation-item mb-4">
+                    <h5 class="fw-bold">{{ item.step }}</h5>
+                    <div class="ps-3 border-start border-primary">
+                        <div class="mb-2">{{ item.details }}</div>
+                        <div class="text-muted fst-italic">
+                            <strong>Why This Matters:</strong> {{ item.importance }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+
+            <!-- Courtroom Entrance -->
+            <section id="courtroom-entrance" class="mb-5">
+                <h3 class="border-bottom pb-2 mb-3">
+                    <i class="fas fa-door-open me-2"></i> Entering the Courtroom
+                </h3>
+                {% for item in script.courtroom_entrance %}
+                <div class="entrance-item mb-3">
+                    <h5 class="fw-bold">{{ item.action }}</h5>
+                    <div class="ps-3 border-start border-primary">
+                        <div>{{ item.explanation }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+
+            <!-- Main Proceeding -->
+            <section id="main-proceeding" class="mb-5">
+                <h3 class="border-bottom pb-2 mb-3">
+                    <i class="fas fa-balance-scale me-2"></i> Main Proceeding
+                </h3>
+                {% for item in script.main_proceeding %}
+                <div class="proceeding-stage mb-4">
+                    <h4 class="bg-light p-2 rounded">{{ item.stage }}</h4>
+                    <div class="ps-3 border-start border-primary">
+                        <div class="mb-3">
+                            <h5><i class="fas fa-eye me-2"></i> What to Expect</h5>
+                            <div class="ps-3">{{ item.what_to_expect }}</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5><i class="fas fa-comment-dots me-2"></i> What to Say</h5>
+                            <div class="ps-3 bg-light p-3 rounded script-text">
+                                "{{ item.what_to_say }}"
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5><i class="fas fa-running me-2"></i> What to Do</h5>
+                            <div class="ps-3">{{ item.what_to_do }}</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5><i class="fas fa-lightbulb me-2 text-warning"></i> Strategic Tips</h5>
+                            <div class="ps-3 fst-italic">{{ item.tips }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+
+            <!-- Asserting Rights -->
+            <section id="asserting-rights" class="mb-5">
+                <h3 class="border-bottom pb-2 mb-3">
+                    <i class="fas fa-shield-alt me-2"></i> Asserting Your Rights
+                </h3>
+                {% for item in script.asserting_rights %}
+                <div class="rights-item mb-4">
+                    <h4 class="bg-light p-2 rounded">{{ item.right }}</h4>
+                    <div class="ps-3 border-start border-primary">
+                        <div class="mb-3">
+                            <h5><i class="fas fa-clock me-2"></i> When to Assert</h5>
+                            <div class="ps-3">{{ item.when_to_assert }}</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5><i class="fas fa-comment-dots me-2"></i> What to Say</h5>
+                            <div class="ps-3 bg-light p-3 rounded script-text">
+                                "{{ item.what_to_say }}"
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5><i class="fas fa-reply-all me-2"></i> Possible Responses & How to Handle</h5>
+                            <div class="ps-3">{{ item.possible_responses }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+
+            <!-- Potential Challenges -->
+            <section id="potential-challenges" class="mb-5">
+                <h3 class="border-bottom pb-2 mb-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Potential Challenges
+                </h3>
+                {% for item in script.potential_challenges %}
+                <div class="challenge-item mb-4">
+                    <h4 class="bg-light p-2 rounded">{{ item.challenge }}</h4>
+                    <div class="ps-3 border-start border-primary">
+                        <div class="mb-3">
+                            <h5><i class="fas fa-check-circle me-2"></i> How to Handle</h5>
+                            <div class="ps-3">{{ item.how_to_handle }}</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5><i class="fas fa-life-ring me-2"></i> Fallback Strategy</h5>
+                            <div class="ps-3">{{ item.fallback_strategy }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+
+            <!-- Conclusion -->
+            <section id="conclusion">
+                <h3 class="border-bottom pb-2 mb-3">
+                    <i class="fas fa-flag-checkered me-2"></i> Conclusion
+                </h3>
+                {% for item in script.conclusion %}
+                <div class="conclusion-item mb-3">
+                    <h5 class="fw-bold">{{ item.action }}</h5>
+                    <div class="ps-3 border-start border-primary">
+                        {% if item.what_to_say %}
+                        <div class="mb-3">
+                            <h6><i class="fas fa-comment-dots me-2"></i> Final Statement</h6>
+                            <div class="ps-3 bg-light p-3 rounded script-text">
+                                "{{ item.what_to_say }}"
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <h6><i class="fas fa-shoe-prints me-2"></i> Next Steps</h6>
+                            <div class="ps-3">{{ item.next_steps }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted">
+                    <small>Script generated for {{ selected_proceeding|replace('_', ' ')|title }} on {{ now().strftime('%B %d, %Y') }}</small>
+                </div>
+                <a href="{{ url_for('court_script.generate_script', case_id=case.id) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-sync-alt me-1"></i> Generate New Script
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    @media print {
+        nav, .breadcrumb, .btn, footer, header {
+            display: none !important;
+        }
+        body {
+            background-color: white;
+        }
+        .card {
+            border: none;
+        }
+        .card-header {
+            background-color: white !important;
+            color: black !important;
+        }
+        .script-text {
+            background-color: white !important;
+            border: 1px solid #ddd;
+        }
+    }
+    
+    .script-text {
+        font-family: Georgia, serif;
+    }
+</style>
+{% endblock %}

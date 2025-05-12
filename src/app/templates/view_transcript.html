@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}Audio Transcript - {{ evidence.original_filename }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.case_summary', case_id=case.id) }}">{{ case.title }}</a></li>
+                    <li class="breadcrumb-item active">Audio Transcript</li>
+                </ol>
+            </nav>
+            
+            <div class="card mb-4 border-attorney-navy shadow-sm">
+                <div class="card-header bg-attorney-navy text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        {% if evidence.file_type == 'audio' %}
+                        <i class="fas fa-headphones-alt me-2"></i> Audio Evidence: {{ evidence.original_filename }}
+                        {% else %}
+                        <i class="fas fa-video me-2"></i> Video Evidence: {{ evidence.original_filename }}
+                        {% endif %}
+                    </h5>
+                    <a href="{{ url_for('cases.case_summary', case_id=case.id) }}" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Case
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-3">
+                                {% if evidence.evidence_type == 'link' and evidence.platform == 'YouTube' %}
+                                YouTube Video
+                                {% elif evidence.file_type == 'audio' %}
+                                Audio Playback
+                                {% else %}
+                                Video Playback
+                                {% endif %}
+                            </h6>
+                            
+                            {% if evidence.evidence_type == 'link' and evidence.platform == 'YouTube' %}
+                                {% set youtube_id = '' %}
+                                {% if 'youtube.com/watch?v=' in evidence.link_url %}
+                                    {% set youtube_id = evidence.link_url.split('youtube.com/watch?v=')[1].split('&')[0] %}
+                                {% elif 'youtu.be/' in evidence.link_url %}
+                                    {% set youtube_id = evidence.link_url.split('youtu.be/')[1].split('?')[0] %}
+                                {% endif %}
+                                
+                                <div class="embed-responsive embed-responsive-16by9">
+                                    <iframe 
+                                        class="embed-responsive-item w-100" 
+                                        style="height: 315px;"
+                                        src="https://www.youtube.com/embed/{{ youtube_id }}" 
+                                        title="YouTube video player" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowfullscreen>
+                                    </iframe>
+                                </div>
+                                <div class="mt-2">
+                                    <a href="{{ evidence.link_url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fab fa-youtube text-danger me-1"></i> Open on YouTube
+                                    </a>
+                                </div>
+                            {% elif evidence.file_type == 'audio' %}
+                                <audio controls class="w-100">
+                                    <source src="{{ url_for('cases.get_evidence_file', evidence_id=evidence.id) }}" type="audio/{{ evidence.original_filename.split('.')[-1] }}">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            {% else %}
+                                <video controls class="w-100">
+                                    <source src="{{ url_for('cases.get_evidence_file', evidence_id=evidence.id) }}" type="video/{{ evidence.original_filename.split('.')[-1] }}">
+                                    Your browser does not support the video element.
+                                </video>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="text-muted mb-0">Evidence Details</h6>
+                                
+                                {% if current_user.is_premium() and evidence.transcript_status != 'pending' %}
+                                <a href="{{ url_for('cases.view_transcript', evidence_id=evidence.id) }}?regenerate=true" class="btn btn-sm btn-outline-attorney-gold">
+                                    <i class="fas fa-sync-alt me-1"></i> Regenerate Transcript
+                                </a>
+                                {% endif %}
+                            </div>
+                            <table class="table table-sm table-bordered">
+                                <tr>
+                                    <th class="bg-light" style="width: 130px;">Description</th>
+                                    <td>{{ evidence.description }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">File Type</th>
+                                    <td>{{ evidence.original_filename.split('.')[-1].upper() }} Audio</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Uploaded</th>
+                                    <td>{{ evidence.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">Status</th>
+                                    <td>
+                                        {% if evidence.transcript_status == 'completed' %}
+                                            <span class="badge bg-success">Transcription Complete</span>
+                                        {% elif evidence.transcript_status == 'pending' %}
+                                            <span class="badge bg-warning">Transcription in Progress</span>
+                                        {% elif evidence.transcript_status == 'failed' %}
+                                            <span class="badge bg-danger">Transcription Failed</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Not Processed</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    {% if evidence.transcript_status != 'completed' and evidence.transcript_status != 'pending' %}
+                        <div class="card border-attorney-navy">
+                            <div class="card-body text-center p-5">
+                                <i class="fas fa-file-audio fa-4x text-muted mb-3"></i>
+                                <h4>No Transcript Available</h4>
+                                <p class="text-muted">This audio file hasn't been transcribed yet.</p>
+                                <a href="{{ url_for('cases.view_transcript', evidence_id=evidence.id) }}?process=true" class="btn btn-attorney-navy">
+                                    <i class="fas fa-magic me-1"></i> Generate Transcript Now
+                                </a>
+                            </div>
+                        </div>
+                    {% elif evidence.transcript_status == 'pending' %}
+                        <div class="card border-attorney-navy">
+                            <div class="card-body text-center p-5">
+                                <div class="spinner-border text-attorney-navy mb-3" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <h4>Transcription in Progress</h4>
+                                <p class="text-muted">Your media is being processed. This process runs in the background and may take several minutes depending on the length of the content.</p>
+                                
+                                <div class="alert alert-info mt-4 mb-4">
+                                    <div class="d-flex">
+                                        <div class="me-3">
+                                            <i class="fas fa-info-circle fa-2x"></i>
+                                        </div>
+                                        <div class="text-start">
+                                            <h5 class="alert-heading">Background Processing</h5>
+                                            <p class="mb-0">You can safely leave this page and continue working on other parts of your case. The transcription will continue processing even when you're not viewing this page.</p>
+                                            <p class="mb-0 mt-2"><strong>When you return later, your transcript will be waiting for you.</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-center mt-3">
+                                    <a href="{{ url_for('cases.view_transcript', evidence_id=evidence.id) }}" class="btn btn-outline-attorney-navy me-2">
+                                        <i class="fas fa-sync-alt me-1"></i> Refresh Status
+                                    </a>
+                                    <a href="{{ url_for('cases.case_summary', case_id=case.id) }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i> Back to Case
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif evidence.transcript_status == 'failed' %}
+                        <div class="card border-danger">
+                            <div class="card-body text-center p-5">
+                                <i class="fas fa-exclamation-triangle fa-4x text-danger mb-3"></i>
+                                <h4>Transcription Failed</h4>
+                                <p class="text-muted">There was an error processing this media file. This can happen for several reasons:</p>
+                                
+                                <ul class="text-start text-muted mb-4 mt-3">
+                                    <li>The file may be corrupted or in an unsupported format</li>
+                                    <li>The audio quality may be too poor for accurate transcription</li>
+                                    <li>The transcription service may be temporarily unavailable</li>
+                                </ul>
+                                
+                                <div class="d-flex justify-content-center mt-3">
+                                    <a href="{{ url_for('cases.view_transcript', evidence_id=evidence.id) }}?process=true" class="btn btn-outline-attorney-navy me-2">
+                                        <i class="fas fa-sync-alt me-1"></i> Try Again
+                                    </a>
+                                    <a href="{{ url_for('cases.case_summary', case_id=case.id) }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i> Back to Case
+                                    </a>
+                                </div>
+                                
+                                <p class="mt-4 small text-muted">If the problem persists, please try uploading a different version of the file or contact support.</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <!-- Transcript Section -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card border-attorney-navy h-100">
+                                    <div class="card-header bg-attorney-navy text-white">
+                                        <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i> Audio Transcript</h5>
+                                    </div>
+                                    <div class="card-body overflow-auto" style="max-height: 400px;">
+                                        <p class="text-muted small mb-3">Transcribed at: {{ evidence.processed_at.strftime('%Y-%m-%d %H:%M') if evidence.processed_at else 'Unknown' }}</p>
+                                        
+                                        <div class="transcript-text">
+                                            {{ evidence.transcript|safe }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card border-attorney-gold h-100">
+                                    <div class="card-header bg-attorney-gold text-dark">
+                                        <h5 class="mb-0"><i class="fas fa-gavel me-2"></i> Legal Analysis</h5>
+                                    </div>
+                                    <div class="card-body overflow-auto" style="max-height: 400px;">
+                                        {% if evidence.transcript_analysis %}
+                                            {% set analysis = evidence.transcript_analysis|fromjson %}
+                                            
+                                            <h6 class="border-bottom pb-2 mb-3">Key Points</h6>
+                                            <ul class="list-group list-group-flush mb-4">
+                                                {% for point in analysis.key_points %}
+                                                <li class="list-group-item">
+                                                    <i class="fas fa-check-circle text-success me-2"></i> {{ point }}
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                            
+                                            <h6 class="border-bottom pb-2 mb-3">Legal Claims</h6>
+                                            <ul class="list-group list-group-flush mb-4">
+                                                {% for claim in analysis.legal_claims %}
+                                                <li class="list-group-item">
+                                                    <i class="fas fa-balance-scale text-primary me-2"></i> {{ claim }}
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                            
+                                            <h6 class="border-bottom pb-2 mb-3">Relevance to Case</h6>
+                                            <div class="card border-light mb-3">
+                                                <div class="card-body py-2 px-3">
+                                                    <p>{{ analysis.relevance }}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            {% if current_user.is_premium() %}
+                                            <h6 class="border-bottom pb-2 mb-3">Actionable Insights <span class="badge bg-attorney-gold text-dark">Premium</span></h6>
+                                            <div class="card border-light mb-3">
+                                                <div class="card-body py-2 px-3">
+                                                    <p>{{ analysis.actionable_insights }}</p>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            
+                                        {% else %}
+                                            <div class="text-center p-4">
+                                                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                                <h5>Analysis Not Available</h5>
+                                                <p class="text-muted">The transcript analysis is not available.</p>
+                                                
+                                                {% if evidence.transcript %}
+                                                <a href="{{ url_for('cases.view_transcript', evidence_id=evidence.id) }}?analyze=true" class="btn btn-sm btn-outline-attorney-navy mt-2">
+                                                    <i class="fas fa-magic me-1"></i> Generate Analysis
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Custom scripts for transcript page -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if there's a process or regenerate button and add loading effects
+        const processButton = document.querySelector('a[href*="process=true"]');
+        const regenerateButton = document.querySelector('a[href*="regenerate=true"]');
+        
+        if (processButton) {
+            processButton.addEventListener('click', function(e) {
+                showLoadingOverlay('Processing audio/video file...');
+            });
+        }
+        
+        if (regenerateButton) {
+            regenerateButton.addEventListener('click', function(e) {
+                showLoadingOverlay('Regenerating transcript and analysis...');
+            });
+        }
+    });
+</script>
+{% endblock %}

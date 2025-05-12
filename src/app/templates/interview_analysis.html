@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Rights Violation Analysis - {{ case.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.case_summary', case_id=case.id) }}">{{ case.title }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('client_interview.case_interview', case_id=case.id) }}">Rights Violation Interview</a></li>
+                    <li class="breadcrumb-item active">Analysis</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-navy text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Rights Violation Analysis</h4>
+                    <a href="{{ url_for('client_interview.case_interview', case_id=case.id) }}" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Interview
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h5 class="fw-bold"><i class="fas fa-gavel me-2"></i>Your Legal Defense Battle Plan</h5>
+                        <p>Based on your interview responses, we've identified potential constitutional violations, evidence suppression opportunities, and speedy trial issues that can help win your case.</p>
+                        <p class="mb-0"><strong>This analysis bypasses the inherent conflict of interest</strong> in a system where public defenders, prosecutors, and judges are all paid by the same entity.</p>
+                    </div>
+
+                    <!-- Primary Defense Strategy -->
+                    <div class="card mb-4 border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-chess me-2"></i>Primary Defense Strategy</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if analysis and analysis.defense_strategy %}
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold">Primary Approach:</h6>
+                                        <p>{{ analysis.defense_strategy.primary_approach }}</p>
+                                        
+                                        <h6 class="fw-bold">Secondary Approach:</h6>
+                                        <p>{{ analysis.defense_strategy.secondary_approach }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold">Key Motions to File:</h6>
+                                        <ul>
+                                            {% for motion in analysis.defense_strategy.key_motions %}
+                                                <li>{{ motion }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                        
+                                        <h6 class="fw-bold">Filing Priority:</h6>
+                                        <p>{{ analysis.defense_strategy.filing_priority }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info mt-3">
+                                    <h6 class="fw-bold">Overall Assessment:</h6>
+                                    <p class="mb-0">{{ analysis.defense_strategy.overall_assessment }}</p>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No defense strategy analysis available. Please complete the interview.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Constitutional Violations -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Constitutional Violations</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if analysis and analysis.constitutional_violations %}
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Violation Type</th>
+                                                <th>Description</th>
+                                                <th>Recommended Action</th>
+                                                <th>Probability of Success</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for violation in analysis.constitutional_violations %}
+                                                <tr>
+                                                    <td>{{ violation.violation_type }}</td>
+                                                    <td>{{ violation.description }}</td>
+                                                    <td>{{ violation.recommended_action }}</td>
+                                                    <td>
+                                                        {% if violation.probability_of_success == "High" %}
+                                                            <span class="badge bg-success">High</span>
+                                                        {% elif violation.probability_of_success == "Medium" %}
+                                                            <span class="badge bg-warning text-dark">Medium</span>
+                                                        {% else %}
+                                                            <span class="badge bg-secondary">Low</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <div class="mt-2">
+                                                            <h6 class="fw-bold">Supporting Case Law:</h6>
+                                                            <ul>
+                                                                {% for case in violation.supporting_case_law %}
+                                                                    <li>{{ case }}</li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                            
+                                                            <h6 class="fw-bold">Suppressible Evidence:</h6>
+                                                            <ul>
+                                                                {% for evidence in violation.suppressible_evidence %}
+                                                                    <li>{{ evidence }}</li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                            
+                                                            <h6 class="fw-bold">Motion Language:</h6>
+                                                            <div class="bg-light p-3 rounded">
+                                                                <pre class="mb-0">{{ violation.motion_language }}</pre>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No constitutional violations identified from your answers.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Speedy Trial Violations -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-stopwatch me-2"></i>Speedy Trial Violations</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if analysis and analysis.speedy_trial_violations %}
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Violation Description</th>
+                                                <th>Jurisdiction Rule</th>
+                                                <th>Probability of Success</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for violation in analysis.speedy_trial_violations %}
+                                                <tr>
+                                                    <td>{{ violation.violation_description }}</td>
+                                                    <td>{{ violation.jurisdiction_rule }}</td>
+                                                    <td>
+                                                        {% if violation.probability_of_success == "High" %}
+                                                            <span class="badge bg-success">High</span>
+                                                        {% elif violation.probability_of_success == "Medium" %}
+                                                            <span class="badge bg-warning text-dark">Medium</span>
+                                                        {% else %}
+                                                            <span class="badge bg-secondary">Low</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3">
+                                                        <div class="mt-2">
+                                                            <h6 class="fw-bold">Supporting Case Law:</h6>
+                                                            <ul>
+                                                                {% for case in violation.supporting_case_law %}
+                                                                    <li>{{ case }}</li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                            
+                                                            <h6 class="fw-bold">Recommended Action:</h6>
+                                                            <p>{{ violation.recommended_action }}</p>
+                                                            
+                                                            <h6 class="fw-bold">Motion Language:</h6>
+                                                            <div class="bg-light p-3 rounded">
+                                                                <pre class="mb-0">{{ violation.motion_language }}</pre>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No speedy trial violations identified from your answers.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Fruit of the Poisonous Tree -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0"><i class="fas fa-tree me-2"></i>Fruit of the Poisonous Tree</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if analysis and analysis.fruit_of_poisonous_tree %}
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Initial Violation</th>
+                                                <th>Tainted Evidence</th>
+                                                <th>Suppression Argument</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for evidence in analysis.fruit_of_poisonous_tree %}
+                                                <tr>
+                                                    <td>{{ evidence.initial_violation }}</td>
+                                                    <td>
+                                                        <ul>
+                                                            {% for item in evidence.tainted_evidence %}
+                                                                <li>{{ item }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </td>
+                                                    <td>{{ evidence.suppression_argument }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3">
+                                                        <div class="mt-2">
+                                                            <h6 class="fw-bold">Supporting Case Law:</h6>
+                                                            <ul>
+                                                                {% for case in evidence.supporting_case_law %}
+                                                                    <li>{{ case }}</li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                            
+                                                            <h6 class="fw-bold">Motion Language:</h6>
+                                                            <div class="bg-light p-3 rounded">
+                                                                <pre class="mb-0">{{ evidence.motion_language }}</pre>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No fruit of the poisonous tree evidence identified from your answers.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Systemic Bias Issues -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="fas fa-balance-scale me-2"></i>Systemic Bias Issues</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if analysis and analysis.systemic_bias_issues %}
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Bias Type</th>
+                                                <th>Description</th>
+                                                <th>Legal Basis</th>
+                                                <th>Recommended Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for bias in analysis.systemic_bias_issues %}
+                                                <tr>
+                                                    <td>{{ bias.bias_type }}</td>
+                                                    <td>{{ bias.description }}</td>
+                                                    <td>{{ bias.legal_basis }}</td>
+                                                    <td>{{ bias.recommended_action }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No systemic bias issues identified from your answers.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="row mt-4">
+                        <div class="col-12 d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('client_interview.case_interview', case_id=case.id) }}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-edit me-1"></i> Edit Answers
+                            </a>
+                            <a href="{{ url_for('court_script.generate_script', case_id=case.id) }}" class="btn btn-primary">
+                                <i class="fas fa-gavel me-1"></i> Generate Court Script
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

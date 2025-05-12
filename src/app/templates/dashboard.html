@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Due Process AI{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h3 class="mb-0">Welcome to Your Dashboard, {{ current_user.username }}!</h3>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Your Legal Resource Center</h5>
+                <p class="card-text">
+                    Manage your cases, upload evidence, and generate legal documents all in one place.
+                    {% if current_user.is_premium() %}
+                        <span class="badge bg-warning text-dark">Premium Features Enabled</span>
+                    {% endif %}
+                </p>
+                <div class="row mt-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <i class="fas fa-gavel fa-3x mb-3 text-primary"></i>
+                                <h5 class="card-title">Start a New Case</h5>
+                                <p class="card-text">Create a new legal case and begin tracking your information.</p>
+                                <a href="{{ url_for('cases.new_case') }}" class="btn btn-primary">Create Case</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <i class="fas fa-file-upload fa-3x mb-3 text-success"></i>
+                                <h5 class="card-title">Upload Evidence</h5>
+                                <p class="card-text">Upload and manage evidence for your existing cases.</p>
+                                <button class="btn btn-success" {% if not cases %}disabled{% endif %} onclick="document.getElementById('selectCaseModal').style.display='block'">Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <i class="fas fa-tools fa-3x mb-3 text-warning"></i>
+                                <h5 class="card-title">Filing Toolkit</h5>
+                                <p class="card-text">Generate legal documents based on your case information.</p>
+                                <a href="{{ url_for('documents.filing_toolkit') }}" class="btn btn-warning">Open Toolkit</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <i class="fas fa-search fa-3x mb-3 text-info"></i>
+                                <h5 class="card-title">View Cases</h5>
+                                <p class="card-text">Review summaries and details of all your existing cases.</p>
+                                <button class="btn btn-info" {% if not cases %}disabled{% endif %} onclick="document.getElementById('caseListSection').scrollIntoView({behavior: 'smooth'})">View Cases</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="caseListSection" class="row">
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Your Cases</h4>
+                <a href="{{ url_for('cases.new_case') }}" class="btn btn-sm btn-light">
+                    <i class="fas fa-plus me-1"></i> New Case
+                </a>
+            </div>
+            <div class="card-body">
+                {% if cases %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Case Title</th>
+                                    <th>Court Type</th>
+                                    <th>Issue Type</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for case in cases %}
+                                    <tr class="case-row" onclick="window.location='{{ url_for('cases.case_summary', case_id=case.id) }}';" style="cursor: pointer;">
+                                        <td>{{ case.title }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">
+                                                {{ case.court_type|replace('_', ' ')|title }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info text-dark">
+                                                {{ case.issue_type|replace('_', ' ')|title }}
+                                            </span>
+                                        </td>
+                                        <td>{{ case.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" onclick="event.stopPropagation();">
+                                                <a href="{{ url_for('cases.case_summary', case_id=case.id) }}" class="btn btn-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                                <a href="{{ url_for('cases.upload_evidence', case_id=case.id) }}" class="btn btn-success">
+                                                    <i class="fas fa-file-upload"></i> Evidence
+                                                </a>
+                                                <a href="{{ url_for('timeline.case_timeline', case_id=case.id) }}" class="btn btn-warning">
+                                                    <i class="fas fa-calendar-alt"></i> Timeline
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-folder-open fa-4x mb-3 text-muted"></i>
+                        <h5>No Cases Yet</h5>
+                        <p class="text-muted">You haven't created any cases yet. Start by creating your first case.</p>
+                        <a href="{{ url_for('cases.new_case') }}" class="btn btn-primary mt-3">
+                            <i class="fas fa-plus me-1"></i> Create Your First Case
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for selecting a case for evidence upload -->
+<div id="selectCaseModal" class="modal" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select a Case for Evidence Upload</h5>
+                <button type="button" class="btn-close" onclick="document.getElementById('selectCaseModal').style.display='none'"></button>
+            </div>
+            <div class="modal-body">
+                {% if cases %}
+                    <div class="list-group">
+                        {% for case in cases %}
+                            <a href="{{ url_for('cases.upload_evidence', case_id=case.id) }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ case.title }}</h5>
+                                    <small>{{ case.created_at.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <p class="mb-1">{{ case.court_type|replace('_', ' ')|title }} - {{ case.issue_type|replace('_', ' ')|title }}</p>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-3">
+                        <p class="mb-0">You don't have any cases yet. Please create a case first.</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('selectCaseModal').style.display='none'">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Close the modal when the user clicks outside of it
+    window.onclick = function(event) {
+        var modal = document.getElementById('selectCaseModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+{% endblock %}

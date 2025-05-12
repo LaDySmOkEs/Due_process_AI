@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+
+{% block title %}Legal Jargon Translator{% endblock %}
+
+{% block styles %}
+<style>
+    .jargon-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        background-color: #fff;
+    }
+    .jargon-search {
+        position: relative;
+        margin-bottom: 30px;
+    }
+    .jargon-search input {
+        width: 100%;
+        padding: 15px 20px;
+        font-size: 18px;
+        border-radius: 30px;
+        border: 2px solid #ddd;
+        transition: all 0.3s;
+    }
+    .jargon-search input:focus {
+        border-color: #4a69bd;
+        box-shadow: 0 0 0 4px rgba(74, 105, 189, 0.1);
+        outline: none;
+    }
+    /* Autocomplete dropdown */
+    .autocomplete-container {
+        position: relative;
+    }
+    .autocomplete-results {
+        position: absolute;
+        width: 100%;
+        max-height: 300px;
+        overflow-y: auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        display: none;
+        margin-top: 5px;
+    }
+    .autocomplete-results.active {
+        display: block;
+    }
+    .autocomplete-item {
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .autocomplete-item:hover, .autocomplete-item.selected {
+        background-color: #f0f4ff;
+    }
+    .jargon-search button {
+        position: absolute;
+        right: 3px;
+        top: 3px;
+        bottom: 3px;
+        border-radius: 28px;
+        padding: 0 25px;
+        background-color: #4a69bd;
+        border: none;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .jargon-search button:hover {
+        background-color: #3a5999;
+    }
+    .jargon-result {
+        display: none;
+        margin-top: 30px;
+    }
+    .jargon-result.active {
+        display: block;
+        animation: fadeIn 0.4s;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .explanation-card {
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+    }
+    .explanation-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+    .card-simple {
+        background-color: #f8f9fa;
+        border-left: 5px solid #4a69bd;
+    }
+    .card-fun {
+        background-color: #fff3e0;
+        border-left: 5px solid #ff9800;
+    }
+    .card-cartoon {
+        background-color: #e8f5e9;
+        border-left: 5px solid #4caf50;
+    }
+    .card-header {
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 16px;
+        color: #555;
+    }
+    .term-heading {
+        margin-bottom: 20px;
+        color: #333;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #eee;
+    }
+    .cartoon-placeholder {
+        height: 200px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 15px;
+        color: #aaa;
+        font-style: italic;
+        text-align: center;
+        padding: 15px;
+    }
+    
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        margin: 20px 0;
+    }
+    .loading-spinner.active {
+        display: block;
+    }
+    
+    /* Popular terms section */
+    .popular-terms {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    .popular-terms h3 {
+        margin-bottom: 15px;
+        color: #555;
+    }
+    .term-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .term-chip {
+        background-color: #e9ecef;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .term-chip:hover {
+        background-color: #4a69bd;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="jargon-container">
+        <h1 class="mb-4">Legal Jargon Translator</h1>
+        <p class="mb-4">Enter a legal term or phrase you don't understand, and we'll explain it in plain language with a fun twist!</p>
+        
+        <form id="jargon-form" method="POST" action="{{ url_for('legal_jargon.translator') }}">
+            <div class="jargon-search">
+                <div class="autocomplete-container">
+                    <input 
+                        type="text" 
+                        id="legal-term" 
+                        name="legal_term" 
+                        placeholder="Enter a legal term (e.g., habeas corpus, pro se)"
+                        value="{{ term or '' }}" 
+                        required
+                        autocomplete="off">
+                    <div class="autocomplete-results" id="autocomplete-results"></div>
+                </div>
+                <button type="submit">Translate</button>
+            </div>
+        </form>
+        
+        <div class="loading-spinner" id="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Consulting our legal dictionary...</p>
+        </div>
+        
+        <div class="jargon-result {% if result %}active{% endif %}" id="result-container">
+            {% if result %}
+            <h2 class="term-heading">{{ term }}</h2>
+            
+            <div class="explanation-card card-simple">
+                <div class="card-header">Simple Explanation</div>
+                <div>{{ result.simple_explanation }}</div>
+            </div>
+            
+            <div class="explanation-card card-fun">
+                <div class="card-header">Fun Explanation</div>
+                <div>{{ result.fun_explanation }}</div>
+            </div>
+            
+            <div class="explanation-card card-cartoon">
+                <div class="card-header">Visual Representation</div>
+                <div>{{ result.cartoon_description }}</div>
+                <div class="cartoon-placeholder">
+                    [Imagine a cartoon here]: {{ result.cartoon_description }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="popular-terms">
+            <h3>Popular Legal Terms</h3>
+            <div class="term-chips">
+                <div class="term-chip" data-term="habeas corpus">Habeas Corpus</div>
+                <div class="term-chip" data-term="pro se">Pro Se</div>
+                <div class="term-chip" data-term="voir dire">Voir Dire</div>
+                <div class="term-chip" data-term="probable cause">Probable Cause</div>
+                <div class="term-chip" data-term="hearsay">Hearsay</div>
+                <div class="term-chip" data-term="motion to suppress">Motion to Suppress</div>
+                <div class="term-chip" data-term="affidavit">Affidavit</div>
+                <div class="term-chip" data-term="discovery">Discovery</div>
+                <div class="term-chip" data-term="subpoena">Subpoena</div>
+                <div class="term-chip" data-term="res judicata">Res Judicata</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form submission with AJAX
+        const form = document.getElementById('jargon-form');
+        const termInput = document.getElementById('legal-term');
+        const resultContainer = document.getElementById('result-container');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const autocompleteResults = document.getElementById('autocomplete-results');
+        const popularTermsContainer = document.querySelector('.term-chips');
+        
+        // Fetch and update popular terms
+        function updatePopularTerms() {
+            fetch('{{ url_for("legal_jargon.api_popular_terms") }}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        // Clear existing terms
+                        popularTermsContainer.innerHTML = '';
+                        
+                        // Add new terms
+                        data.forEach(term => {
+                            const chip = document.createElement('div');
+                            chip.className = 'term-chip';
+                            chip.setAttribute('data-term', term.term);
+                            chip.textContent = term.term.charAt(0).toUpperCase() + term.term.slice(1);
+                            popularTermsContainer.appendChild(chip);
+                            
+                            // Add click event
+                            chip.addEventListener('click', () => {
+                                termInput.value = term.term;
+                                form.dispatchEvent(new Event('submit'));
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching popular terms:', error);
+                });
+        }
+        
+        // Load popular terms on page load
+        updatePopularTerms();
+        
+        // Autocomplete functionality
+        let selectedItem = -1;
+        
+        termInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            if (query.length < 2) {
+                autocompleteResults.classList.remove('active');
+                return;
+            }
+            
+            // Fetch search suggestions
+            fetch(`{{ url_for("legal_jargon.api_search_suggestions") }}?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        // Build results HTML
+                        autocompleteResults.innerHTML = '';
+                        data.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'autocomplete-item';
+                            div.textContent = item.term;
+                            div.setAttribute('data-term', item.term);
+                            
+                            div.addEventListener('click', function() {
+                                termInput.value = this.getAttribute('data-term');
+                                autocompleteResults.classList.remove('active');
+                                form.dispatchEvent(new Event('submit'));
+                            });
+                            
+                            autocompleteResults.appendChild(div);
+                        });
+                        
+                        autocompleteResults.classList.add('active');
+                        selectedItem = -1;
+                    } else {
+                        autocompleteResults.classList.remove('active');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching suggestions:', error);
+                    autocompleteResults.classList.remove('active');
+                });
+        });
+        
+        // Handle keyboard navigation in autocomplete
+        termInput.addEventListener('keydown', function(e) {
+            const items = autocompleteResults.querySelectorAll('.autocomplete-item');
+            
+            // Down arrow key
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (selectedItem < items.length - 1) {
+                    selectedItem++;
+                    updateSelectedItem(items);
+                }
+            }
+            // Up arrow key
+            else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (selectedItem > 0) {
+                    selectedItem--;
+                    updateSelectedItem(items);
+                }
+            }
+            // Enter key
+            else if (e.key === 'Enter' && selectedItem >= 0) {
+                e.preventDefault();
+                if (items[selectedItem]) {
+                    termInput.value = items[selectedItem].getAttribute('data-term');
+                    autocompleteResults.classList.remove('active');
+                    form.dispatchEvent(new Event('submit'));
+                }
+            }
+            // Escape key
+            else if (e.key === 'Escape') {
+                autocompleteResults.classList.remove('active');
+            }
+        });
+        
+        // Helper to update the selected item styling
+        function updateSelectedItem(items) {
+            items.forEach((item, index) => {
+                if (index === selectedItem) {
+                    item.classList.add('selected');
+                    // Scroll to item if needed
+                    const itemPos = item.offsetTop;
+                    const containerHeight = autocompleteResults.offsetHeight;
+                    if (itemPos < autocompleteResults.scrollTop || 
+                        itemPos > autocompleteResults.scrollTop + containerHeight) {
+                        autocompleteResults.scrollTop = itemPos - 50;
+                    }
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+        
+        // Hide autocomplete when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!autocompleteResults.contains(e.target) && e.target !== termInput) {
+                autocompleteResults.classList.remove('active');
+            }
+        });
+        
+        // Handle form submission via AJAX
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const term = termInput.value.trim();
+            if (!term) return;
+            
+            // Hide autocomplete
+            autocompleteResults.classList.remove('active');
+            
+            // Show loading, hide results
+            resultContainer.classList.remove('active');
+            loadingSpinner.classList.add('active');
+            
+            // Make AJAX request
+            fetch('{{ url_for("legal_jargon.api_translate_term") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({term: term}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading
+                loadingSpinner.classList.remove('active');
+                
+                // Build result HTML
+                resultContainer.innerHTML = `
+                    <h2 class="term-heading">${term}</h2>
+                    
+                    <div class="explanation-card card-simple">
+                        <div class="card-header">Simple Explanation</div>
+                        <div>${data.simple_explanation}</div>
+                    </div>
+                    
+                    <div class="explanation-card card-fun">
+                        <div class="card-header">Fun Explanation</div>
+                        <div>${data.fun_explanation}</div>
+                    </div>
+                    
+                    <div class="explanation-card card-cartoon">
+                        <div class="card-header">Visual Representation</div>
+                        <div>${data.cartoon_description}</div>
+                        <div class="cartoon-placeholder">
+                            [Imagine a cartoon here]: ${data.cartoon_description}
+                        </div>
+                    </div>
+                `;
+                
+                // Show results
+                resultContainer.classList.add('active');
+                
+                // Update popular terms list after a short delay
+                setTimeout(updatePopularTerms, 1000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loadingSpinner.classList.remove('active');
+                alert('Error fetching translation. Please try again.');
+            });
+        });
+        
+        // Handle popular term chips
+        const termChips = document.querySelectorAll('.term-chip');
+        termChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const term = chip.getAttribute('data-term');
+                termInput.value = term;
+                form.dispatchEvent(new Event('submit'));
+            });
+        });
+    });
+</script>
+{% endblock %}

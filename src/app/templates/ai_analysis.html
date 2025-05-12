@@ -1,0 +1,686 @@
+{% extends "base.html" %}
+
+{% block title %}AI Legal Analysis - {{ case.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.case_summary', case_id=case.id) }}">{{ case.title }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">AI Legal Analysis</li>
+                </ol>
+            </nav>
+            <h1 class="mb-4">AI Legal Analysis</h1>
+            <div class="alert alert-info">
+                <strong>Case:</strong> {{ case.title }} <br>
+                <strong>Type:</strong> {{ case.issue_type }} in {{ case.court_type }} court
+            </div>
+        </div>
+    </div>
+
+    <!-- Introduction to AI Legal Tools -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">Due Process AI - Attorney-Level Analysis</h5>
+                    <p class="card-text">This AI-powered legal analysis tool replaces many functions traditionally performed by attorneys, giving you professional-grade insights instantly at a fraction of the cost.</p>
+                    
+                    <div class="mt-3 mb-2">
+                        <h6><i class="fas fa-robot me-2"></i>Active AI Providers:</h6>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <div class="badge bg-success p-2">
+                                <i class="fas fa-check-circle me-1"></i> OpenAI (Primary)
+                            </div>
+                            
+                            {% if not is_premium %}
+                            <a href="{{ url_for('settings.settings') }}" class="badge bg-secondary p-2 text-decoration-none">
+                                <i class="fas fa-plus-circle me-1"></i> Add Anthropic Claude (Unlimited)
+                            </a>
+                            {% endif %}
+                            
+                            <span class="badge bg-info text-dark p-2">
+                                <i class="fas fa-info-circle me-1"></i> Multiple providers ensure reliable service
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <h6 class="fw-bold"><i class="fas fa-lightbulb me-2"></i>Understanding Your Legal Strategy</h6>
+                        <p class="mb-0">The AI provides powerful insights based on your case details. Remember to carefully review all recommendations and consider consulting with a legal professional for complex cases. Your active participation in understanding these strategies is essential for the best outcomes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Features Section -->
+    {% if is_premium %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-warning shadow-lg" style="position: relative; overflow: hidden;">
+                <!-- Premium badge -->
+                <div style="position: absolute; top: -10px; right: -10px; background: gold; padding: 20px; transform: rotate(45deg) translateY(-20px) translateX(20px); box-shadow: 0 2px 5px rgba(0,0,0,0.2); width: 120px; text-align: center;">
+                    <span style="font-weight: bold; color: #333;">PREMIUM</span>
+                </div>
+                
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-crown me-2"></i>PREMIUM LEGAL TOOLS</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-dark mb-3">
+                        <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Exclusive Premium Features</h5>
+                        <p>These advanced tools are only available to premium subscribers and provide deeper legal insights:</p>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card h-100 bg-light border-warning">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-chess fa-3x text-warning mb-3"></i>
+                                    <h5>Advanced Legal Strategy</h5>
+                                    <p>Get a comprehensive winning strategy tailored specifically to your case</p>
+                                    <button id="generate-strategy-btn" class="btn btn-warning btn-lg w-100">
+                                        <i class="fas fa-chess me-1"></i> Generate Strategy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 bg-light border-primary">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-percentage fa-3x text-primary mb-3"></i>
+                                    <h5>Success Probability</h5>
+                                    <p>Calculate your likelihood of success with detailed supporting factors</p>
+                                    <button id="calculate-probability-btn" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-calculator me-1"></i> Calculate Probability
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="row">
+        <!-- Rights Violations Analysis Section -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 border-danger">
+                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i> Rights Violations Detection</h5>
+                    {% if not has_case_law %}
+                    <form method="post" action="{{ url_for('ai.case_ai_analysis', case_id=case.id) }}">
+                        <input type="hidden" name="analysis_type" value="case_law">
+                        <button type="submit" class="btn btn-light btn-sm">Detect Violations</button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if case_law_data and case_law_data.get('rights_assessment') %}
+                        <p class="text-danger fw-bold mb-4">Our AI has detected potential rights violations in your case:</p>
+                        {% for violation in case_law_data.get('rights_assessment', []) %}
+                        <div class="mb-4 p-3 border rounded 
+                            {% if violation.severity == 'High' %}border-danger{% 
+                            elif violation.severity == 'Medium' %}border-warning{% 
+                            else %}border-info{% endif %}">
+                            <div class="d-flex justify-content-between align-items-top">
+                                <h5 class="mb-2">{{ violation.right_violated }}</h5>
+                                <span class="badge 
+                                    {% if violation.severity == 'High' %}bg-danger{% 
+                                    elif violation.severity == 'Medium' %}bg-warning text-dark{% 
+                                    else %}bg-info text-dark{% endif %}">
+                                    {{ violation.severity }} Severity
+                                </span>
+                            </div>
+                            <p>{{ violation.explanation }}</p>
+                            <div class="bg-light p-2 rounded">
+                                <p class="small mb-0"><strong>Legal principle:</strong> {{ violation.supporting_legal_principle }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="alert alert-info mt-4">
+                            <p class="mb-0"><strong>What this means:</strong> These potential rights violations may provide grounds for legal action or defense in your case.</p>
+                        </div>
+                    {% elif has_case_law %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-spinner fa-spin me-2"></i> Rights analysis is being generated. Please refresh in a moment.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-secondary">
+                            <h6 class="fw-bold mb-3"><i class="fas fa-shield-alt me-2"></i>Discover Your Rights</h6>
+                            <p>Your rights are the foundation of justice. Generate an AI analysis to identify potential violations in your case.</p>
+                            <p>Our system will carefully examine your case details to detect:</p>
+                            <ul>
+                                <li>Constitutional rights violations</li>
+                                <li>Civil rights issues</li>
+                                <li>Procedural errors that may help your case</li>
+                                <li>Due process concerns that could be challenged</li>
+                            </ul>
+                            <p class="text-danger"><strong>Why This Matters:</strong> Understanding potential rights violations is the first step toward restoring justice in your case.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Case Law Analysis Section -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-gavel me-2"></i> Strategic Case Law</h5>
+                    {% if not has_case_law %}
+                    <form method="post" action="{{ url_for('ai.case_ai_analysis', case_id=case.id) }}">
+                        <input type="hidden" name="analysis_type" value="case_law">
+                        <button type="submit" class="btn btn-light btn-sm">Find Precedents</button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if case_law_data and case_law_data.get('case_law_suggestions') %}
+                        <p class="text-primary fw-bold mb-4">These powerful precedent cases could help you fight for justice:</p>
+                        {% for case_law in case_law_data.get('case_law_suggestions', []) %}
+                        <div class="mb-4 p-3 border rounded border-primary">
+                            <h5 class="mb-2">{{ case_law.case_name }} ({{ case_law.year }})</h5>
+                            <p class="small text-muted"><strong>Court:</strong> {{ case_law.court }}</p>
+                            <p><strong>How this helps your case:</strong> {{ case_law.relevance }}</p>
+                            <p><strong>Key legal principles:</strong> {{ case_law.principles }}</p>
+                            
+                            {% if case_law.get('key_quotes') %}
+                            <div class="mt-3 mb-3">
+                                <h6 class="text-success"><i class="fas fa-quote-left me-2"></i>Powerful Quotes to Use:</h6>
+                                <div class="ms-3 border-start border-success ps-3">
+                                    {% for quote in case_law.get('key_quotes', []) %}
+                                    <p class="fst-italic mb-2">"{{ quote }}"</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if case_law.get('counter_arguments') %}
+                            <div class="mt-3">
+                                <h6 class="text-danger"><i class="fas fa-shield-alt me-2"></i>Counter Opposing Arguments:</h6>
+                                <p>{{ case_law.get('counter_arguments') }}</p>
+                            </div>
+                            {% endif %}
+                            {% if case_law.strategic_application %}
+                            <div class="bg-light p-2 rounded mt-2">
+                                <p class="small mb-0"><strong>Strategic application:</strong> {{ case_law.strategic_application }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% elif has_case_law %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-spinner fa-spin me-2"></i> Case law analysis is being generated. Please refresh in a moment.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-secondary">
+                            <h6 class="fw-bold mb-3"><i class="fas fa-balance-scale me-2"></i>Powerful Precedents For Your Case</h6>
+                            <p>The right case law can make the difference between success and failure in court.</p>
+                            <p>Our AI will search thousands of legal precedents to find the exact cases that can:</p>
+                            <ul>
+                                <li>Support your specific legal position</li>
+                                <li>Provide legal principles judges must follow</li>
+                                <li>Establish a legal foundation for your arguments</li>
+                                <li>Include strategic guidance on how to apply each precedent</li>
+                            </ul>
+                            <p class="text-primary"><strong>How To Use This:</strong> Cite these cases in your legal documents and arguments to strengthen your position.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Recommendations Section -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 border-success">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i> Strategic Document Plan</h5>
+                    {% if not has_doc_recommendations %}
+                    <form method="post" action="{{ url_for('ai.case_ai_analysis', case_id=case.id) }}">
+                        <input type="hidden" name="analysis_type" value="document_recommendations">
+                        <button type="submit" class="btn btn-light btn-sm">Create Document Plan</button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if doc_recommendations_data and doc_recommendations_data.get('document_recommendations') %}
+                        <p class="text-success fw-bold mb-4">Your personalized legal document strategy to fight for justice:</p>
+                        {% for doc in doc_recommendations_data.get('document_recommendations', []) %}
+                        <div class="mb-4 p-3 border rounded 
+                            {% if doc.importance == 'Critical' %}border-danger{% 
+                            elif doc.importance == 'High' %}border-warning{% 
+                            else %}border-info{% endif %}">
+                            
+                            <div class="d-flex justify-content-between align-items-top">
+                                <h5 class="mb-2">{{ doc.document_type }}</h5>
+                                <div>
+                                    <span class="badge 
+                                        {% if doc.importance == 'Critical' %}bg-danger{% 
+                                        elif doc.importance == 'High' %}bg-warning text-dark{% 
+                                        else %}bg-info text-dark{% endif %}">{{ doc.importance }}</span>
+                                        
+                                    {% if doc.impact %}
+                                        <span class="badge bg-dark ms-1">{{ doc.impact }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <p>{{ doc.rationale }}</p>
+                            
+                            <div class="mt-3">
+                                <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#keyElements{{ loop.index }}" role="button" aria-expanded="false">
+                                    <i class="fas fa-list me-1"></i> Key Elements
+                                </a>
+                                <a class="btn btn-sm btn-outline-secondary ms-1" data-bs-toggle="collapse" href="#strategy{{ loop.index }}" role="button" aria-expanded="false">
+                                    <i class="fas fa-chess me-1"></i> Strategic Guidance
+                                </a>
+                                <a href="{{ url_for('documents.filing_toolkit') }}" class="btn btn-sm btn-success ms-1">
+                                    <i class="fas fa-pencil-alt me-1"></i> Prepare Document
+                                </a>
+                            </div>
+                            
+                            <!-- Key Elements Collapsible Section -->
+                            <div class="collapse mt-3" id="keyElements{{ loop.index }}">
+                                <div class="card card-body bg-light">
+                                    <h6 class="card-subtitle mb-2">Essential Elements to Include:</h6>
+                                    <ul class="mb-0">
+                                        {% if doc.key_elements is string %}
+                                            <li>{{ doc.key_elements }}</li>
+                                        {% else %}
+                                            {% for element in doc.key_elements %}
+                                                <li>{{ element }}</li>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Strategy Collapsible Section -->
+                            <div class="collapse mt-3" id="strategy{{ loop.index }}">
+                                <div class="card card-body bg-light">
+                                    <h6 class="card-subtitle mb-2">Strategic Guidance:</h6>
+                                    <p class="mb-2">{{ doc.strategic_guidance }}</p>
+                                    {% if doc.timing %}
+                                        <p class="mb-0"><strong>Timing:</strong> {{ doc.timing }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="alert alert-success mt-4">
+                            <p class="mb-0"><strong>Pro Tip:</strong> Follow the document strategy in the recommended order for maximum effectiveness in your case.</p>
+                        </div>
+                    {% elif has_doc_recommendations %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-spinner fa-spin me-2"></i> Your document strategy is being generated. Please refresh in a moment.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-secondary">
+                            <h6 class="fw-bold mb-3"><i class="fas fa-file-signature me-2"></i>Your Personal Legal Document Plan</h6>
+                            <p>The right legal documents can make all the difference in your fight for justice.</p>
+                            <p>Our AI will create a customized document strategy that includes:</p>
+                            <ul>
+                                <li>A prioritized list of essential documents for your specific case</li>
+                                <li>Strategic guidance on how to prepare each document effectively</li>
+                                <li>Critical elements that must be included in each filing</li>
+                                <li>Timing recommendations for maximum strategic impact</li>
+                                <li>Importance ratings to help you focus on what matters most</li>
+                            </ul>
+                            <p class="text-success"><strong>Take Action:</strong> Once generated, you can click on each document to prepare it using our document toolkit.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Winning Strategy Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-trophy me-2"></i>Winning Strategy Blueprint</h5>
+                </div>
+                <div class="card-body">
+                    {% if case_law_data and case_law_data.get('winning_strategy') %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0"><i class="fas fa-chess-knight me-2"></i>Primary Case Strategy</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>{{ case_law_data.winning_strategy.get('primary_approach', 'Strategy generation in progress...') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="card mb-3 h-100">
+                                    <div class="card-header bg-danger text-white">
+                                        <h6 class="mb-0"><i class="fas fa-gavel me-2"></i>Attack/Defense Tactics</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="ps-3 mb-0">
+                                        {% if case_law_data.winning_strategy.get('attack_defense_tactics') %}
+                                            {% for tactic in case_law_data.winning_strategy.get('attack_defense_tactics', []) %}
+                                                <li>{{ tactic }}</li>
+                                            {% endfor %}
+                                        {% else %}
+                                            <li>Tactics generation in progress...</li>
+                                        {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3 h-100">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0"><i class="fas fa-file-alt me-2"></i>Procedural Motions</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="ps-3 mb-0">
+                                        {% if case_law_data.winning_strategy.get('procedural_motions') %}
+                                            {% for motion in case_law_data.winning_strategy.get('procedural_motions', []) %}
+                                                <li>{{ motion }}</li>
+                                            {% endfor %}
+                                        {% else %}
+                                            <li>Motions generation in progress...</li>
+                                        {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="card mb-3 h-100">
+                                    <div class="card-header bg-info text-dark">
+                                        <h6 class="mb-0"><i class="fas fa-search me-2"></i>Evidence Challenges</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>{{ case_law_data.winning_strategy.get('evidence_challenges', 'Evidence challenge strategies being generated...') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3 h-100">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Hearing Objections</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>{{ case_law_data.winning_strategy.get('hearing_objections', 'Hearing objection tactics being generated...') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-dark text-white">
+                                        <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Timing Strategy</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="mb-0">{{ case_law_data.winning_strategy.get('timing_strategy', 'Timing strategy being generated...') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning mt-3">
+                            <p class="mb-0"><strong>Winning Defense Strategy:</strong> This battle plan bypasses the conflicts of interest in the legal system where public defenders, judges, and prosecutors are all paid by the same entity. Challenge BOTH probable cause AND speedy trial violations immediately with these ready-to-use motions that ANYONE can file themselves - no legal training needed.</p>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <h6 class="fw-bold"><i class="fas fa-info-circle me-2"></i>Comprehensive Case Analysis Required</h6>
+                            <p>To view your winning strategy blueprint, first generate a comprehensive case law analysis using the "Find Precedents" button above.</p>
+                            <p>Your winning strategy will include:</p>
+                            <ul>
+                                <li>Two-pronged attack on probable cause AND speedy trial rights</li>
+                                <li>Simple court motions so clear anyone can file them successfully</li>
+                                <li>Exact legal arguments copied from winning Supreme Court cases</li>
+                                <li>Timeline calculation tools to prove your speedy trial rights violations</li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Premium Features Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">AI Legal Strategy Assistant</h5>
+                </div>
+                <div class="card-body">
+                    <p>The AI Legal Strategy Assistant analyzes your case to provide even more advanced attorney-level strategic advice.</p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button class="btn btn-success" id="generate-strategy-btn" {% if not current_user.is_premium() %}disabled{% endif %}>
+                            Generate Advanced Legal Strategy <span class="badge bg-warning text-dark ms-2">Premium</span>
+                        </button>
+                        <button class="btn btn-primary" id="calculate-probability-btn" {% if not current_user.is_premium() %}disabled{% endif %}>
+                            Calculate Detailed Success Probability <span class="badge bg-warning text-dark ms-2">Premium</span>
+                        </button>
+                    </div>
+                    {% if not current_user.is_premium() %}
+                    <div class="mt-3 text-center">
+                        <a href="#" class="text-decoration-none">Upgrade to Premium</a> to unlock advanced legal AI features
+                    </div>
+                    {% else %}
+                    <div class="mt-3 text-center">
+                        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Premium Features Enabled</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Document Strategy Modal -->
+<div class="modal fade" id="strategyModal" tabindex="-1" aria-labelledby="strategyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="strategyModalLabel">Document Drafting Strategy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="strategyModalBody">
+                Loading strategy...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+<!-- Strategy Modal -->
+<div class="modal fade" id="strategyModal" tabindex="-1" aria-labelledby="strategyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="strategyModalLabel">Document Strategy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="strategyModalBody">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading strategy...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Document strategy button click event
+    const strategyBtns = document.querySelectorAll('.doc-strategy-btn');
+    const strategyModal = new bootstrap.Modal(document.getElementById('strategyModal'));
+    
+    // Advanced strategy premium button
+    const generateStrategyBtn = document.getElementById('generate-strategy-btn');
+    if (generateStrategyBtn) {
+        generateStrategyBtn.addEventListener('click', function() {
+            document.getElementById('strategyModalLabel').textContent = 'Advanced Legal Strategy';
+            document.getElementById('strategyModalBody').innerHTML = 'Generating advanced legal strategy...';
+            
+            // Show the modal
+            strategyModal.show();
+            
+            // Fetch advanced strategy
+            fetch(`/api/case/{{ case.id }}/generate-advanced-strategy`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('strategyModalBody').innerHTML = data.strategy;
+                } else if (data.premium_required) {
+                    document.getElementById('strategyModalBody').innerHTML = 
+                        '<div class="alert alert-warning">' +
+                        '<h6 class="fw-bold"><i class="fas fa-crown me-2"></i>Premium Feature</h6>' +
+                        '<p>This feature is available exclusively to premium subscribers.</p>' +
+                        '<p class="mb-0">Please upgrade your account to access advanced legal strategy generation.</p>' +
+                        '</div>';
+                } else {
+                    document.getElementById('strategyModalBody').innerHTML = 
+                        '<div class="alert alert-danger">' +
+                        '<h6 class="fw-bold"><i class="fas fa-exclamation-circle me-2"></i>Strategy Generation Issue</h6>' +
+                        '<p>' + (data.error || 'An error occurred generating your strategy') + '</p>' +
+                        '<p class="mb-0 small">Please verify your AI provider settings or try again later.</p>' +
+                        '</div>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('strategyModalBody').innerHTML = 
+                    '<div class="alert alert-danger">' +
+                    '<h6 class="fw-bold"><i class="fas fa-exclamation-circle me-2"></i>Connection Issue</h6>' +
+                    '<p>We encountered a problem connecting to the AI service.</p>' +
+                    '<p class="mb-0">Please check your network connection and try again, or visit the Settings page to verify your API configuration.</p>' +
+                    '</div>';
+            });
+        });
+    }
+    
+    // Success probability premium button
+    const calculateProbabilityBtn = document.getElementById('calculate-probability-btn');
+    if (calculateProbabilityBtn) {
+        calculateProbabilityBtn.addEventListener('click', function() {
+            document.getElementById('strategyModalLabel').textContent = 'Success Probability Analysis';
+            document.getElementById('strategyModalBody').innerHTML = 'Calculating success probability...';
+            
+            // Show the modal
+            strategyModal.show();
+            
+            // Fetch success probability
+            fetch(`/api/case/{{ case.id }}/calculate-success-probability`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('strategyModalBody').innerHTML = data.probability;
+                } else if (data.premium_required) {
+                    document.getElementById('strategyModalBody').innerHTML = 
+                        '<div class="alert alert-warning">' +
+                        '<h6 class="fw-bold"><i class="fas fa-crown me-2"></i>Premium Feature</h6>' +
+                        '<p>This feature is available exclusively to premium subscribers.</p>' +
+                        '<p class="mb-0">Please upgrade your account to access detailed success probability calculation.</p>' +
+                        '</div>';
+                } else {
+                    document.getElementById('strategyModalBody').innerHTML = 
+                        '<div class="alert alert-danger">' +
+                        '<h6 class="fw-bold"><i class="fas fa-exclamation-circle me-2"></i>Probability Calculation Issue</h6>' +
+                        '<p>' + (data.error || 'An error occurred calculating success probability') + '</p>' +
+                        '<p class="mb-0 small">Please verify your AI provider settings or try again later.</p>' +
+                        '</div>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('strategyModalBody').innerHTML = 
+                    '<div class="alert alert-danger">' +
+                    '<h6 class="fw-bold"><i class="fas fa-exclamation-circle me-2"></i>Connection Issue</h6>' +
+                    '<p>We encountered a problem connecting to the AI service.</p>' +
+                    '<p class="mb-0">Please check your network connection and try again, or visit the Settings page to verify your API configuration.</p>' +
+                    '</div>';
+            });
+        });
+    }
+    
+    // Document strategy button click event
+    strategyBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const docType = this.getAttribute('data-doc-type');
+            document.getElementById('strategyModalLabel').textContent = docType + ' - Drafting Strategy';
+            document.getElementById('strategyModalBody').innerHTML = 'Loading strategy...';
+            
+            // Show the modal
+            strategyModal.show();
+            
+            // Fetch the strategy
+            fetch(`/api/case/{{ case.id }}/generate-document-strategy`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    doc_type: docType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('strategyModalBody').innerHTML = data.strategy;
+                } else {
+                    document.getElementById('strategyModalBody').innerHTML = 
+                        '<div class="alert alert-danger">' +
+                        '<h6 class="fw-bold"><i class="fas fa-exclamation-circle me-2"></i>Strategy Generation Issue</h6>' +
+                        '<p>' + (data.error || 'An error occurred generating your strategy') + '</p>' +
+                        '<p class="mb-0 small">Please verify your AI provider settings or try again later.</p>' +
+                        '</div>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('strategyModalBody').innerHTML = 
+                    '<div class="alert alert-danger">' +
+                    '<h6 class="fw-bold"><i class="fas fa-exclamation-circle me-2"></i>Connection Issue</h6>' +
+                    '<p>We encountered a problem connecting to the AI service.</p>' +
+                    '<p class="mb-0">Please check your network connection and try again, or visit the Settings page to verify your API configuration.</p>' +
+                    '</div>';
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

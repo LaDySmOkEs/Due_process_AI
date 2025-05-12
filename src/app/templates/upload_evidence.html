@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Evidence - Due Process AI{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-attorney-navy text-white">
+                <h3 class="mb-0"><i class="fas fa-folder-plus me-2"></i> Upload Evidence for Case: {{ case.title }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-4">
+                    <h5><i class="fas fa-info-circle me-2"></i> Case Information</h5>
+                    <ul class="mb-0">
+                        <li><strong>Court Type:</strong> {{ case.court_type|replace('_', ' ')|title }}</li>
+                        <li><strong>Issue Type:</strong> {{ case.issue_type|replace('_', ' ')|title }}</li>
+                        <li><strong>Created:</strong> {{ case.created_at.strftime('%Y-%m-%d') }}</li>
+                    </ul>
+                </div>
+                
+                <form method="POST" action="" enctype="multipart/form-data" id="evidence-form">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Evidence Type</label>
+                                <div class="evidence-type-selector mt-2">
+                                    <div class="btn-group" role="group" aria-label="Evidence Type">
+                                        {% for subfield in form.evidence_type %}
+                                        <input type="radio" class="btn-check" name="evidence_type" id="{{ subfield.id }}" value="{{ subfield.data }}" autocomplete="off" {% if subfield.checked %}checked{% endif %}>
+                                        <label class="btn btn-outline-attorney" for="{{ subfield.id }}">
+                                            {% if subfield.label.text == 'Upload File' %}
+                                            <i class="fas fa-file-upload me-1"></i>
+                                            {% else %}
+                                            <i class="fas fa-link me-1"></i>
+                                            {% endif %}
+                                            {{ subfield.label.text }}
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- File Upload Section - shown when file radio is selected -->
+                    <div id="file-upload-section" class="mb-3">
+                        {{ form.file.label(class="form-label") }}
+                        {% if form.file.errors %}
+                            {{ form.file(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.file.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.file(class="form-control") }}
+                        {% endif %}
+                        <div class="form-text">
+                            Allowed file types include documents (PDF, DOC, DOCX, TXT, etc.), images (JPG, PNG, GIF, etc.),
+                            audio (MP3, WAV), video (MP4, MOV), and archives (ZIP, RAR)<br>
+                            Maximum file size: 75MB
+                        </div>
+                    </div>
+                    
+                    <!-- Link Section - shown when link radio is selected -->
+                    <div id="link-section" class="mb-3" style="display: none;">
+                        <div class="mb-3">
+                            {{ form.link_url.label(class="form-label") }}
+                            {% if form.link_url.errors %}
+                                {{ form.link_url(class="form-control is-invalid", placeholder="https://www.youtube.com/watch?v=...") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.link_url.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.link_url(class="form-control", placeholder="https://www.youtube.com/watch?v=...") }}
+                            {% endif %}
+                            <div class="form-text">
+                                Enter a complete URL including https:// for YouTube, Facebook, Twitter, Instagram, TikTok, etc.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.platform.label(class="form-label") }}
+                            {% if form.platform.errors %}
+                                {{ form.platform(class="form-select is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.platform.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.platform(class="form-select") }}
+                            {% endif %}
+                            <div class="form-text">
+                                Select the platform or source of the link (optional - will be auto-detected if possible)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.description.label(class="form-label") }}
+                        {% if form.description.errors %}
+                            {{ form.description(class="form-control is-invalid", rows=4) }}
+                            <div class="invalid-feedback">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.description(class="form-control", rows=4) }}
+                        {% endif %}
+                        <div class="form-text">
+                            Provide a clear description of this evidence and its relevance to your case.
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('cases.case_summary', case_id=case.id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Case
+                        </a>
+                        {{ form.submit(class="btn btn-attorney btn-lg") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header bg-attorney-navy text-white">
+                <h4 class="mb-0"><i class="fas fa-gavel me-2"></i> Professional Evidence Submission Guidelines</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-check-circle text-success me-2"></i> Best Practices</h5>
+                        <ul>
+                            <li>Use clear, descriptive filenames</li>
+                            <li>Ensure all text is legible in documents</li>
+                            <li>Include dates and sources for all evidence</li>
+                            <li>Organize related documents together</li>
+                            <li>Ensure all pages are properly oriented</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-exclamation-triangle text-warning me-2"></i> Common Issues to Avoid</h5>
+                        <ul>
+                            <li>Blurry or illegible documents</li>
+                            <li>Missing pages or incomplete documents</li>
+                            <li>Undated or unsigned documents</li>
+                            <li>Confusing or misleading filenames</li>
+                            <li>Duplicate or redundant submissions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the form sections
+        const fileSection = document.getElementById('file-upload-section');
+        const linkSection = document.getElementById('link-section');
+        
+        // Get the radio buttons
+        const evidenceTypeRadios = document.querySelectorAll('input[name="evidence_type"]');
+        
+        // Add event listeners to radio buttons
+        evidenceTypeRadios.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                if (this.value === 'file') {
+                    fileSection.style.display = 'block';
+                    linkSection.style.display = 'none';
+                } else if (this.value === 'link') {
+                    fileSection.style.display = 'none';
+                    linkSection.style.display = 'block';
+                }
+            });
+        });
+        
+        // Initialize the form based on the default selected value
+        evidenceTypeRadios.forEach(function(radio) {
+            if (radio.checked) {
+                if (radio.value === 'file') {
+                    fileSection.style.display = 'block';
+                    linkSection.style.display = 'none';
+                } else if (radio.value === 'link') {
+                    fileSection.style.display = 'none';
+                    linkSection.style.display = 'block';
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

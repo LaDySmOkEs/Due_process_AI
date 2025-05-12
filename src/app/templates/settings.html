@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Due Process AI - Settings{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Application Settings</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title mb-4">AI Provider Configuration</h5>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> About AI Providers</h6>
+                        <p class="mb-0">Due Process AI uses multiple AI providers to ensure reliable service and maximize your chances of getting justice. When one provider reaches its rate limit, others will automatically be used as fallbacks.</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('settings.settings') }}">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">OpenAI (Primary Provider)</label>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="badge bg-success me-2">Configured</div>
+                                <span>Our primary AI provider for legal analysis</span>
+                            </div>
+                            <small class="text-muted">Note: OpenAI has limited free tier capacity and may occasionally reach rate limits.</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="anthropic_api_key" class="form-label fw-bold">Anthropic Claude (Backup Provider)</label>
+                            <div class="d-flex align-items-center mb-2">
+                                {% if anthropic_configured %}
+                                <div class="badge bg-success me-2">Configured</div>
+                                <span>Available as a backup when OpenAI reaches rate limits</span>
+                                {% else %}
+                                <div class="badge bg-warning text-dark me-2">Not Configured</div>
+                                <span>Add your API key to enable unlimited capacity</span>
+                                {% endif %}
+                            </div>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="anthropic_api_key" name="anthropic_api_key" placeholder="Enter your Anthropic API key">
+                                <button class="btn btn-outline-secondary" type="submit">Save</button>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                <a href="https://console.anthropic.com/" target="_blank">Get an Anthropic API key here</a> - Provides higher rate limits for more reliable service.
+                            </small>
+                        </div>
+                    </form>
+
+                    <div class="mt-5">
+                        <h5 class="card-title mb-3">Additional Options</h5>
+                        <div class="alert alert-secondary">
+                            <p class="mb-0">
+                                <i class="fas fa-lock me-2"></i> 
+                                Due Process AI ensures your data is handled with the highest level of security and privacy.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

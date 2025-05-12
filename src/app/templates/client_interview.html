@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Client Interview Questions - {{ case.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('cases.case_summary', case_id=case.id) }}">{{ case.title }}</a></li>
+                    <li class="breadcrumb-item active">Rights Violation Interview</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-navy text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Case Rights Violation Interview</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h5 class="fw-bold"><i class="fas fa-balance-scale me-2"></i>Why These Questions Matter</h5>
+                        <p>These questions are designed to identify constitutional violations, evidence suppression opportunities, and systemic bias in your case. Your answers will help create a customized defense strategy that bypasses the inherent conflicts of interest in the legal system.</p>
+                        <p class="mb-0"><strong>Everything you share is confidential and protected.</strong> Be as detailed as possible to help build your strongest defense.</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('client_interview.case_interview', case_id=case.id) }}">
+                        <div class="accordion" id="interviewAccordion">
+                            <!-- Initial Contact Questions -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="initialContactHeading">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#initialContactCollapse" aria-expanded="true" aria-controls="initialContactCollapse">
+                                        <i class="fas fa-handshake me-2"></i> Initial Contact with Law Enforcement
+                                    </button>
+                                </h2>
+                                <div id="initialContactCollapse" class="accordion-collapse collapse show" aria-labelledby="initialContactHeading">
+                                    <div class="accordion-body">
+                                        <p class="text-muted mb-3">These questions focus on your first interaction with law enforcement and potential Fourth Amendment violations.</p>
+                                        
+                                        {% for i, question in enumerate(questions.initial_contact) %}
+                                        <div class="mb-4">
+                                            <label class="form-label fw-bold">{{ question.question }}</label>
+                                            <textarea class="form-control" name="initial_contact_{{ i }}" rows="3" placeholder="Your detailed answer...">{{ answers.get('initial_contact', [])[i] if answers.get('initial_contact') and i < len(answers.get('initial_contact', [])) else '' }}</textarea>
+                                            <div class="form-text text-info">{{ question.follow_up }}</div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Search and Seizure Questions -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="searchHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse" aria-expanded="false" aria-controls="searchCollapse">
+                                        <i class="fas fa-search me-2"></i> Search and Seizure Details
+                                    </button>
+                                </h2>
+                                <div id="searchCollapse" class="accordion-collapse collapse" aria-labelledby="searchHeading">
+                                    <div class="accordion-body">
+                                        <p class="text-muted mb-3">These questions help identify illegal searches and "fruit of the poisonous tree" evidence that can be suppressed.</p>
+                                        
+                                        {% for i, question in enumerate(questions.search_and_seizure) %}
+                                        <div class="mb-4">
+                                            <label class="form-label fw-bold">{{ question.question }}</label>
+                                            <textarea class="form-control" name="search_and_seizure_{{ i }}" rows="3" placeholder="Your detailed answer...">{{ answers.get('search_and_seizure', [])[i] if answers.get('search_and_seizure') and i < len(answers.get('search_and_seizure', [])) else '' }}</textarea>
+                                            <div class="form-text text-info">{{ question.follow_up }}</div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Timeline Questions -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="timelineHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#timelineCollapse" aria-expanded="false" aria-controls="timelineCollapse">
+                                        <i class="fas fa-calendar-alt me-2"></i> Case Timeline Information
+                                    </button>
+                                </h2>
+                                <div id="timelineCollapse" class="accordion-collapse collapse" aria-labelledby="timelineHeading">
+                                    <div class="accordion-body">
+                                        <p class="text-muted mb-3">These questions help identify speedy trial rights violations that could get your case dismissed.</p>
+                                        
+                                        {% for i, question in enumerate(questions.timeline_questions) %}
+                                        <div class="mb-4">
+                                            <label class="form-label fw-bold">{{ question.question }}</label>
+                                            <textarea class="form-control" name="timeline_questions_{{ i }}" rows="3" placeholder="Your detailed answer...">{{ answers.get('timeline_questions', [])[i] if answers.get('timeline_questions') and i < len(answers.get('timeline_questions', [])) else '' }}</textarea>
+                                            <div class="form-text text-info">{{ question.follow_up }}</div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Evidence Questions -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="evidenceHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#evidenceCollapse" aria-expanded="false" aria-controls="evidenceCollapse">
+                                        <i class="fas fa-folder-open me-2"></i> Evidence Collection Details
+                                    </button>
+                                </h2>
+                                <div id="evidenceCollapse" class="accordion-collapse collapse" aria-labelledby="evidenceHeading">
+                                    <div class="accordion-body">
+                                        <p class="text-muted mb-3">These questions help identify evidence that may have been illegally obtained and can be suppressed.</p>
+                                        
+                                        {% for i, question in enumerate(questions.evidence_questions) %}
+                                        <div class="mb-4">
+                                            <label class="form-label fw-bold">{{ question.question }}</label>
+                                            <textarea class="form-control" name="evidence_questions_{{ i }}" rows="3" placeholder="Your detailed answer...">{{ answers.get('evidence_questions', [])[i] if answers.get('evidence_questions') and i < len(answers.get('evidence_questions', [])) else '' }}</textarea>
+                                            <div class="form-text text-info">{{ question.follow_up }}</div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- System Bias Questions -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="biasHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#biasCollapse" aria-expanded="false" aria-controls="biasCollapse">
+                                        <i class="fas fa-balance-scale-right me-2"></i> System Bias Indicators
+                                    </button>
+                                </h2>
+                                <div id="biasCollapse" class="accordion-collapse collapse" aria-labelledby="biasHeading">
+                                    <div class="accordion-body">
+                                        <p class="text-muted mb-3">These questions help identify conflicts of interest and system bias that may impact your case.</p>
+                                        
+                                        {% for i, question in enumerate(questions.system_bias_questions) %}
+                                        <div class="mb-4">
+                                            <label class="form-label fw-bold">{{ question.question }}</label>
+                                            <textarea class="form-control" name="system_bias_questions_{{ i }}" rows="3" placeholder="Your detailed answer...">{{ answers.get('system_bias_questions', [])[i] if answers.get('system_bias_questions') and i < len(answers.get('system_bias_questions', [])) else '' }}</textarea>
+                                            <div class="form-text text-info">{{ question.follow_up }}</div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" name="save_answers" class="btn btn-primary me-md-2">
+                                <i class="fas fa-save me-2"></i> Save Answers
+                            </button>
+                            <button type="submit" name="analyze_answers" class="btn btn-success">
+                                <i class="fas fa-robot me-2"></i> Analyze Rights Violations
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

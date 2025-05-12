@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Case Summary - Due Process AI{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('cases.dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Case Summary</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">{{ case.title }}</h3>
+                <span class="badge bg-secondary">{{ case.court_type|replace('_', ' ')|title }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Issue Type:</strong> <span class="badge bg-info text-dark">{{ case.issue_type|replace('_', ' ')|title }}</span></p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p><strong>Created:</strong> {{ case.created_at.strftime('%B %d, %Y') }}</p>
+                    </div>
+                </div>
+                
+                <h5 class="card-title">Case Description</h5>
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        <p class="mb-0" style="white-space: pre-line;">{{ case.description }}</p>
+                    </div>
+                </div>
+                
+                <h5 class="card-title">Evidence</h5>
+                {% if evidence %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Filename</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Uploaded</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in evidence %}
+                                    <tr>
+                                        <td>
+                                            {% if item.evidence_type == 'link' %}
+                                                <i class="
+                                                    {% if 'YouTube' in item.platform %}fab fa-youtube text-danger
+                                                    {% elif 'Facebook' in item.platform %}fab fa-facebook text-primary
+                                                    {% elif 'Twitter' in item.platform or 'X' in item.platform %}fab fa-twitter text-info
+                                                    {% elif 'Instagram' in item.platform %}fab fa-instagram text-purple
+                                                    {% elif 'TikTok' in item.platform %}fab fa-tiktok text-dark
+                                                    {% elif 'LinkedIn' in item.platform %}fab fa-linkedin text-primary
+                                                    {% else %}fas fa-link text-secondary
+                                                    {% endif %} me-2
+                                                "></i>
+                                                {% if item.platform == 'YouTube' %}
+                                                    <span data-bs-toggle="collapse" data-bs-target="#youtube-{{ item.id }}" style="cursor: pointer;" class="text-primary">
+                                                        {{ item.original_filename }} <i class="fas fa-play-circle ms-1"></i>
+                                                    </span>
+                                                    <div class="collapse mt-2" id="youtube-{{ item.id }}">
+                                                        <!-- YouTube preview would go here -->
+                                                        <div class="mt-2 mb-2">
+                                                            <a href="{{ item.link_url }}" target="_blank" class="btn btn-sm btn-outline-danger">
+                                                                <i class="fab fa-youtube me-1"></i> Open on YouTube
+                                                            </a>
+                                                            
+                                                            <a href="{{ url_for('cases.view_transcript', evidence_id=item.id) }}" class="btn btn-sm btn-outline-attorney-navy ms-2">
+                                                                <i class="fas fa-file-alt me-1"></i> 
+                                                                {% if item.transcript_status == 'completed' %}
+                                                                    View Transcript & Analysis
+                                                                {% elif item.transcript_status == 'pending' %}
+                                                                    Transcription in progress...
+                                                                {% else %}
+                                                                    Generate Transcript
+                                                                {% endif %}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    <a href="{{ item.link_url }}" target="_blank" rel="noopener noreferrer">{{ item.original_filename }}</a>
+                                                {% endif %}
+                                            {% else %}
+                                                <i class="
+                                                    {% if item.file_type == 'pdf' %}fas fa-file-pdf text-danger
+                                                    {% elif item.file_type == 'document' %}fas fa-file-word text-primary
+                                                    {% elif item.file_type == 'image' %}fas fa-file-image text-success
+                                                    {% elif item.file_type == 'video' %}fas fa-file-video text-danger
+                                                    {% elif item.file_type == 'audio' %}fas fa-file-audio text-warning
+                                                    {% elif item.file_type == 'presentation' %}fas fa-file-powerpoint text-orange
+                                                    {% elif item.file_type == 'spreadsheet' %}fas fa-file-excel text-success
+                                                    {% elif item.file_type == 'archive' %}fas fa-file-archive text-info
+                                                    {% else %}fas fa-file-alt text-secondary
+                                                    {% endif %} me-2
+                                                "></i>
+                                                {% if item.file_type == 'audio' or item.file_type == 'video' %}
+                                                    <span data-bs-toggle="collapse" data-bs-target="#media-{{ item.id }}" style="cursor: pointer;" class="text-primary">
+                                                        {{ item.original_filename }} <i class="fas fa-play-circle ms-1"></i>
+                                                    </span>
+                                                    <div class="collapse mt-2" id="media-{{ item.id }}">
+                                                        {% if item.file_type == 'audio' %}
+                                                            <audio controls class="w-100 mb-2">
+                                                                <source src="{{ url_for('cases.get_evidence_file', evidence_id=item.id) }}" type="audio/{{ item.original_filename.split('.')[-1] }}">
+                                                                Your browser does not support the audio element.
+                                                            </audio>
+                                                        {% else %}
+                                                            <video controls class="w-100 mb-2" style="max-height: 200px;">
+                                                                <source src="{{ url_for('cases.get_evidence_file', evidence_id=item.id) }}" type="video/{{ item.original_filename.split('.')[-1] }}">
+                                                                Your browser does not support the video element.
+                                                            </video>
+                                                        {% endif %}
+                                                        
+                                                        <div class="d-flex justify-content-end">
+                                                            <a href="{{ url_for('cases.view_transcript', evidence_id=item.id) }}" class="btn btn-sm btn-outline-attorney-navy">
+                                                                <i class="fas fa-file-alt me-1"></i> 
+                                                                {% if item.transcript_status == 'completed' %}
+                                                                    View Transcript & Analysis
+                                                                {% elif item.transcript_status == 'pending' %}
+                                                                    Transcription in progress...
+                                                                {% else %}
+                                                                    Generate Transcript
+                                                                {% endif %}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                {% else %}
+                                                    {{ item.original_filename }}
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if item.evidence_type == 'link' %}
+                                                <span class="badge bg-info">
+                                                    {{ item.platform }}
+                                                </span>
+                                            {% else %}
+                                                <span class="badge 
+                                                    {% if item.file_type == 'pdf' %}bg-danger
+                                                    {% elif item.file_type == 'document' %}bg-primary
+                                                    {% elif item.file_type == 'image' %}bg-success
+                                                    {% elif item.file_type == 'video' %}bg-danger
+                                                    {% elif item.file_type == 'audio' %}bg-warning
+                                                    {% elif item.file_type == 'presentation' %}bg-orange
+                                                    {% elif item.file_type == 'spreadsheet' %}bg-success
+                                                    {% elif item.file_type == 'archive' %}bg-info
+                                                    {% else %}bg-secondary
+                                                    {% endif %}
+                                                ">
+                                                    {{ item.file_type|title }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ item.description }}</td>
+                                        <td>{{ item.uploaded_at.strftime('%Y-%m-%d') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-light">
+                        <p class="mb-0">No evidence has been uploaded for this case yet.</p>
+                    </div>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <a href="{{ url_for('cases.upload_evidence', case_id=case.id) }}" class="btn btn-success me-2">
+                        <i class="fas fa-file-upload me-1"></i> Upload New Evidence
+                    </a>
+                    <a href="{{ url_for('timeline.case_timeline', case_id=case.id) }}" class="btn btn-primary">
+                        <i class="fas fa-calendar-alt me-1"></i> Case Timeline
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">Actions</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('ai.case_ai_analysis', case_id=case.id) }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-robot me-1"></i> AI Legal Analysis
+                    </a>
+                    <a href="{{ url_for('evidence_ai.evidence_analysis', case_id=case.id) }}" class="btn btn-info btn-lg">
+                        <i class="fas fa-balance-scale me-1"></i> Evidence Analysis
+                    </a>
+                    <a href="{{ url_for('timeline.case_timeline', case_id=case.id) }}" class="btn btn-warning btn-lg">
+                        <i class="fas fa-calendar-alt me-1"></i> Case Timeline
+                        <span class="badge bg-danger text-white ms-1">New</span>
+                    </a>
+                    <a href="{{ url_for('documents.filing_toolkit') }}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-tools me-1"></i> Filing Toolkit
+                    </a>
+                    <a href="{{ url_for('cases.upload_evidence', case_id=case.id) }}" class="btn btn-success">
+                        <i class="fas fa-file-upload me-1"></i> Upload Evidence
+                    </a>
+                    <a href="{{ url_for('cases.dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">Case Information</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Number of Evidence Files
+                        <span class="badge bg-primary rounded-pill">{{ evidence|length }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Last Updated
+                        <span>{{ case.updated_at.strftime('%Y-%m-%d') }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Case Owner
+                        <span>{{ current_user.username }}</span>
+                    </li>
+                </ul>
+                
+                {% if current_user.is_premium() %}
+                    <div class="card bg-warning text-dark mt-3 mb-0 border-warning">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-crown fa-2x text-dark"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">Premium Features Activated</h5>
+                                    <p class="card-text mb-2">Unlock advanced legal analysis for this case:</p>
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ url_for('ai.case_ai_analysis', case_id=case.id) }}" class="btn btn-sm btn-dark">
+                                            <i class="fas fa-chess-knight me-1"></i> Advanced Strategy
+                                        </a>
+                                        <a href="{{ url_for('ai.case_ai_analysis', case_id=case.id) }}" class="btn btn-sm btn-dark">
+                                            <i class="fas fa-percentage me-1"></i> Success Probability
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

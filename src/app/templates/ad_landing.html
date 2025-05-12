@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Due Process AI - Legal Defense Made Simple{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 text-center">
+            <h1 class="display-4 text-attorney-navy mb-4">Welcome to Due Process AI</h1>
+            <p class="lead mb-5">{{ ad_message }}</p>
+            
+            <div class="shadow p-5 mb-5 bg-white rounded">
+                <h2 class="text-attorney-navy mb-4">Powerful Legal Defense Tools</h2>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="fas fa-search fa-3x text-attorney-gold mb-3"></i>
+                                <h5>Evidence Analysis</h5>
+                                <p class="small">Professional-grade evidence processing and organization</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="fas fa-balance-scale fa-3x text-attorney-gold mb-3"></i>
+                                <h5>Rights Protection</h5>
+                                <p class="small">Identify violations that could win your case</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file-alt fa-3x text-attorney-gold mb-3"></i>
+                                <h5>Document Generation</h5>
+                                <p class="small">Court-ready documents tailored to your case</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 col-md-8 mx-auto">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-lg btn-attorney-navy">
+                        Create Your Free Account
+                    </a>
+                    <a href="{{ url_for('home') }}" class="btn btn-outline-attorney-navy">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+            
+            <div class="alert alert-warning">
+                <strong>Limited Time Offer:</strong> Premium subscription just $50/month. Fee waivers available for qualifying users.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
