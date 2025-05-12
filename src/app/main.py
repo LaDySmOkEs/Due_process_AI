@@ -15,7 +15,7 @@ class Base(DeclarativeBase):
     pass
 
 # Initialize the database
-db = SQLAlchemy(model_class=Base)
+db.init_app(app)
 migrate = Migrate()
 
 # Initialize Flask app
