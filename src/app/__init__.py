@@ -1,4 +1,4 @@
 from .app_factory import create_app
 
-# Create app instance
+# Initialize the Flask app
 app = create_app()
